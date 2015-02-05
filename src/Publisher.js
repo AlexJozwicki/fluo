@@ -46,9 +46,19 @@ Publisher.prototype.shouldEmit = function () {
  */
 Publisher.prototype.listen = function (callback, bindContext) {
     var self = this;
+    var aborted = false;
     bindContext = bindContext || this;
 
     var eventHandler = function (args) {
+        if (aborted) {
+            // This state is achieved when one listener removes another.
+            //   It might be considered a bug of EventEmitter2 which makes
+            //   a snapshot of the listener list before looping through them
+            //   and effectively ignores calls to removeListener() during emit.
+            // TODO: Needs a test.
+            return;
+        }
+
         var result = callback.apply(bindContext, args);
         if (_.isPromise(result)) {
             // Note: To support mixins, we need to access the method this way.
@@ -68,6 +78,7 @@ Publisher.prototype.listen = function (callback, bindContext) {
     this.emitter.addListener(this.eventType, eventHandler);
 
     return function () {
+        aborted = true;
         self.emitter.removeListener(self.eventType, eventHandler);
     };
 };
