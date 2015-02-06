@@ -20,12 +20,18 @@ exports.inherits = function (Child, Parent) {
 
 exports.bindMethods = function (methods, instance) {
     for (var name in methods) {
-        var method = methods[name];
-        if (typeof method !== 'function' || !methods.hasOwnProperty(name)) {
-            continue;
+        if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+            // NOTE: Getter invocation is prevented but then nor they are copied.
+            var desc = Object.getOwnPropertyDescriptor(methods, name);
+            if (typeof desc.value === 'function') {
+                instance[name] = desc.value.bind(instance);
+            }
+        } else {
+            var method = methods[name];
+            if (typeof method === 'function' && methods.hasOwnProperty(name)) {
+                instance[name] = method.bind(instance);
+            }
         }
-
-        instance[name] = method.bind(instance);
     }
 };
 
@@ -49,12 +55,29 @@ exports.copyPropertiesOf = function (target, instance) {
     var plain = {};
 
     for (var name in target) {
-        var value = target[name];
-        if (typeof value === 'function' || typeof plain[name] !== 'undefined') {
-            continue;
-        }
+        if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+            var desc_src = target;
+            while (desc_src && desc_src !== Object.prototype) {
+                // Getter invocation prevention.
+                var desc = Object.getOwnPropertyDescriptor(desc_src, name);
+                if (desc && typeof desc.value !== 'function') {
+                    Object.defineProperty(instance, name, desc);
+                    break;
+                }
 
-        instance[name] = value;
+                // Inherited (not "own") properties are ignored
+                //   by Object.getOwnPropertyDescriptor()
+                //   We need to climb up the prototype chain.
+                desc_src = Object.getPrototypeOf(desc_src);
+            }
+        } else {
+            var value = target[name];
+            if (typeof value === 'function' || typeof plain[name] !== 'undefined') {
+                continue;
+            }
+
+            instance[name] = value;
+        }
     }
 };
 
@@ -71,7 +94,24 @@ exports.extend = function(obj) {
     for (var i = 1, length = arguments.length; i < length; i++) {
         source = arguments[i];
         for (prop in source) {
-            obj[prop] = source[prop];
+            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+                var desc_src = source;
+                while (desc_src) {
+                    // Getter invocation prevention.
+                    var desc = Object.getOwnPropertyDescriptor(desc_src, prop);
+                    if (desc) {
+                        Object.defineProperty(obj, prop, desc);
+                        break;
+                    }
+
+                    // Inherited (not "own") properties are ignored
+                    //   by Object.getOwnPropertyDescriptor()
+                    //   We need to climb up the prototype chain.
+                    desc_src = Object.getPrototypeOf(desc_src);
+                }
+            } else {
+                obj[prop] = source[prop];
+            }
         }
     }
     return obj;
