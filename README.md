@@ -112,7 +112,7 @@ Create an action by calling `fluo.createAction()` with an optional options objec
 var statusUpdate = fluo.createAction(options);
 ```
 
-An action is a functor that can be invoked like any function.
+An action is a [functor](http://en.wikipedia.org/wiki/Function_object) that can be invoked like any function.
 
 ```javascript
 statusUpdate(data); // Invokes the action statusUpdate
@@ -277,7 +277,7 @@ MyAction.prototype.exampleMethod = function () {
 };
 ```
 
-Notice the `return` keyword in the constructor. This is required for created actions to be functors (function objects) so that you can simply call `action()` instead of `action.trigger()`.
+Notice the `return` keyword in the constructor. This is required for created actions to be [functors (function objects)](http://en.wikipedia.org/wiki/Function_object) so that you can simply call `action()` instead of `action.trigger()`.
 
 [Back to top](#content)
 
