@@ -1,13 +1,11 @@
-# RefluxJS
+# Fluo
 
-A simple library for unidirectional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
+A prototype-based fork of the Reflux data flow library similar to [Facebook Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][npm-url]
 [![Bower Version][bower-image]][bower-url]
-[![Dependencies][dependencies-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
-[![Gratipay][gratipay-image]][gratipay-url]
 
 You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
@@ -24,7 +22,7 @@ The pattern is composed of actions and data stores, where actions initiate new d
 
 ## Content
 
-- [Comparing RefluxJS with Facebook Flux](#comparing-refluxjs-with-facebook-flux)
+- [Comparing Fluo with Facebook Flux](#comparing-fluo-with-facebook-flux)
 - [Examples](#examples)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -34,15 +32,15 @@ The pattern is composed of actions and data stores, where actions initiate new d
 - [Advanced Usage](#advanced-usage)
 - [Colophon](#colophon)
 
-## Comparing RefluxJS with Facebook Flux
+## Comparing Fluo with Facebook Flux
 
-The goal of the refluxjs project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
+The goal of the Fluo project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
 
-You can read more in this [blog post about React Flux vs Reflux](http://spoike.ghost.io/deconstructing-reactjss-flux/).
+You can read more in this [blog post about React Flux vs Reflux (Fluo)](http://spoike.ghost.io/deconstructing-reactjss-flux/).
 
 ### Similarities with Flux
 
-Some concepts are still in Reflux in comparison with Flux:
+Some concepts are still in Fluo in comparison with Flux:
 
 * There are actions
 * There are data stores
@@ -50,15 +48,15 @@ Some concepts are still in Reflux in comparison with Flux:
 
 ### Differences with Flux
 
-Reflux has refactored Flux to be a bit more dynamic and be more Functional Reactive Programming (FRP) friendly:
+Fluo has refactored Flux to be a bit more dynamic and be more Functional Reactive Programming (FRP) friendly:
 
 * The singleton dispatcher is removed in favor for letting every action act as dispatcher instead.
 * Because actions are listenable, the stores may listen to them. Stores don't need to have big switch statements that do static type checking (of action types) with strings
 * Stores may listen to other stores, i.e. it is possible to create stores that can *aggregate data further*, similar to a map/reduce.
-* `waitFor` is replaced in favor to handle *serial* and *parallel* data flows:
+* `waitFor()` is replaced in favor to handle *serial* and *parallel* data flows:
  * **Aggregate data stores** (mentioned above) may listen to other stores in *serial*
  * **Joins** for joining listeners in *parallel*
-* *Action creators* are not needed because RefluxJS actions are functions that will pass on the payload they receive to anyone listening to them
+* *Action creators* are not needed because Fluo actions are functions that will pass on the payload they receive to anyone listening to them
 
 [Back to top](#content)
 
@@ -78,19 +76,19 @@ You can currently install the package as a npm package or bower.
 
 ### NPM
 
-The following command installs reflux as an npm package:
+The following command installs Fluo as an npm package:
 
-    npm install reflux
+    npm install fluo
 
 ### Bower
 
-The following command installs reflux as a bower component that can be used in the browser:
+The following command installs Fluo as a bower component that can be used in the browser:
 
-    bower install reflux
+    bower install fluo
 
 ### ES5
 
-Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
+Like React, Fluo depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
 
 [Back to top](#content)
 
@@ -102,29 +100,29 @@ For a full example check the [`test/index.js`](test/index.js) file.
 
 ### Creating actions
 
-Create an action by calling `Reflux.createAction` with an optional options object.
+Create an action by calling `fluo.createAction()` with an optional options object.
 
 ```javascript
-var statusUpdate = Reflux.createAction(options);
+var statusUpdate = fluo.createAction(options);
 ```
 
 An action is a functor that can be invoked like any function.
 
 ```javascript
 statusUpdate(data); // Invokes the action statusUpdate
-statusUpdate.triggerAsync(data); // same effect as above
+statusUpdate.trigger(data); // same effect as above
 ```
 
-If `options.sync` is true, the functor will instead call `action.trigger` which is a synchronous operation. You can change `action.sync` during the lifetime of the action, and the following calls will honour that change.
+If `options.sync` is true, the functor will instead call `action.triggerSync()` which is a synchronous operation. You can change `action.sync` during the lifetime of the action, and the following calls will honour that change.
 
 There is also a convenience function for creating multiple actions.
 
 ```javascript
-var Actions = Reflux.createActions([
-    "statusUpdate",
-    "statusEdited",
-    "statusAdded"
-  ]);
+var Actions = fluo.createActions([
+    'statusUpdate',
+    'statusEdited',
+    'statusAdded'
+]);
 
 // Actions object now contains the actions
 // with the names given in the array above
@@ -139,17 +137,17 @@ For actions that represent asynchronous operations (e.g. API calls), a few separ
 
 ```javascript
 // this creates 'load', 'load.completed' and 'load.failed'
-var Actions = Reflux.createActions({
-    "load": {children: ["completed","failed"]}
+var Actions = fluo.createActions({
+    'load': { children: [ 'completed', 'failed'] }
 });
 
 // when 'load' is triggered, call async operation and trigger related actions
-Actions.load.listen( function() {
+Actions.load.listen(function () {
     // By default, the listener is bound to the action
     // so we can access child actions using 'this'
     someAsyncOperation()
-        .then( this.completed )
-        .catch( this.failed );
+        .then(this.completed)
+        .catch(this.failed);
 });
 ```
 
@@ -157,35 +155,35 @@ There is a shorthand to define the `completed` and `failed` actions in the typic
 
 ```javascript
 createAction({
-    children: ["progressed","completed","failed"]
+    children: [ 'progressed', 'completed', 'failed' ]
 });
 
 createAction({
     asyncResult: true,
-    children: ["progressed"]
+    children: [ 'progressed' ]
 });
 ```
 
 There are a couple of helper methods available to trigger the `completed` and `failed` actions:
 
-* `promise` - Expects a promise object and binds the triggers of the `completed` and `failed` child actions to that promise, using `then()` and `catch()`.
+* `promise()` - Expects a promise object and binds the triggers of the `completed` and `failed` child actions to that promise, using `then()` and `catch()`.
 
-* `listenAndPromise` - Expects a function that returns a promise object, which is called when the action is triggered, after which `promise` is called with the returned promise object. Essentially calls the function on trigger of the action, which then triggers the `completed` or `failed` child actions after the promise is fulfilled.
+* `listenAndPromise()` - Expects a function that returns a promise object, which is called when the action is triggered, after which `promise()` is called with the returned promise object. Essentially calls the function on trigger of the action, which then triggers the `completed` or `failed` child actions after the promise is fulfilled.
 
 Therefore, the following are all equivalent:
 
 ```javascript
-asyncResultAction.listen( function(arguments) {
+asyncResultAction.listen(function (arguments) {
     someAsyncOperation(arguments)
         .then(asyncResultAction.completed)
         .catch(asyncResultAction.failed);
 });
 
-asyncResultAction.listen( function(arguments) {
-    asyncResultAction.promise( someAsyncOperation(arguments) );
+asyncResultAction.listen(function (arguments) {
+    asyncResultAction.promise(someAsyncOperation(arguments));
 });
 
-asyncResultAction.listenAndPromise( someAsyncOperation );
+asyncResultAction.listenAndPromise(someAsyncOperation);
 ```
 
 ##### Asynchronous actions as Promises
@@ -196,16 +194,16 @@ Suppose you had an action + store to make an API request:
 
 ```javascript
 // Create async action with `completed` & `failed` children
-var makeRequest = Reflux.createAction({ asyncResult: true });
+var makeRequest = fluo.createAction({ asyncResult: true });
 
-var RequestStore = Reflux.createStore({
-    init: function() {
+var RequestStore = fluo.createStore({
+    init: function () {
         this.listenTo(makeRequest, 'onMakeRequest');
     },
 
-    onMakeRequest: function(url) {
+    onMakeRequest: function (url) {
         // Assume `request` is some HTTP library (e.g. superagent)
-        request(url, function(response) {
+        request(url, function (response) {
             if (response.ok) {
                 makeRequest.completed(response.body);
             } else {
@@ -219,9 +217,9 @@ var RequestStore = Reflux.createStore({
 Then, on the server, you could use promises to make the request and either render or serve an error:
 
 ```javascript
-makeRequest('/api/something').then(function(body) {
+makeRequest('/api/something').then(function (body) {
     // Render the response body
-}).catch(function(err) {
+}).catch(function (err) {
     // Handle the API error object
 });
 ```
@@ -230,16 +228,16 @@ makeRequest('/api/something').then(function(body) {
 
 There are a couple of hooks available for each action.
 
-* `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation. If it returns something other than undefined, that will be used as arguments for `shouldEmit` and subsequent emission.
+* `preEmit()` - Is called before the action emits an event. It receives the arguments from the action invocation. If it returns something other than undefined, that will be used as arguments for `shouldEmit()` and subsequent emission.
 
-* `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
+* `shouldEmit()` - Is called after `preEmit()` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
 
 Example usage:
 
 ```javascript
-Actions.statusUpdate.preEmit = function() { console.log(arguments); };
-Actions.statusUpdate.shouldEmit = function(value) {
-    return value > 0;
+Actions.statusUpdate.preEmit = function () { console.log(arguments); };
+Actions.statusUpdate.shouldEmit = function (value) {
+    return (value > 0);
 };
 
 Actions.statusUpdate(0);
@@ -250,113 +248,91 @@ Actions.statusUpdate(1);
 You can also set the hooks by sending them in a definition object as you create the action:
 
 ```javascript
-var action = Reflux.createAction({
-    preEmit: function(){...},
-    shouldEmit: function(){...}
+var action = fluo.createAction({
+    preEmit: function () { /* ... */ },
+    shouldEmit: function () { /* ... */ }
 });
 ```
 
-#### Reflux.ActionMethods
+#### fluo.Action
 
-If you would like to have a common set of methods available to all actions you can extend the `Reflux.ActionMethods` object, which is mixed into the actions when they are created.
+If you would like to have a common set of methods available to all actions you can extend the `fluo.Action` object and create instances the standard way – `new MyAction(definition)`.
 
 Example usage:
 
 ```javascript
-Reflux.ActionMethods.exampleMethod = function() { console.log(arguments); };
+var MyAction = function () {
+    return fluo.Action.apply(this, arguments);
+};
+MyAction.prototype = Object.create(fluo.Action.prototype);
 
-Actions.statusUpdate.exampleMethod('arg1');
-// Should output: 'arg1'
+MyAction.prototype.exampleMethod = function () {
+    console.log(arguments);
+};
 ```
+
+Notice the `return` keyword in the constructor. This is required for created actions to be functors (function objects) so that you can simply call `action()` instead of `action.trigger()`.
 
 [Back to top](#content)
 
 ### Creating data stores
 
-Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
+The recommended way to create stores is by extending the provided `fluo.Store` prototype.
 
 ```javascript
-// Creates a DataStore
-var statusStore = Reflux.createStore({
+var StatusStore = function () {
+    fluo.Store.call(this);
+};
+StatusStore.prototype = Object.create(fluo.Store.prototype);
 
-    // Initial setup
-    init: function() {
+StatusStore.prototype.init = function () {
+    this.listenTo(statusUpdate, this.output);
+};
 
-        // Register statusUpdate action
+StatusStore.prototype.output = function () {
+    var status = flag ? 'ONLINE' : 'OFFLINE';
+    this.trigger(status);
+};
+
+var statusStore = new StatusStore();
+```
+
+*Deprecated:* You can also create a data store much like React components (`react.createClass()`) by passing a definition object to `fluo.createStore()`. You may set up all action listeners in the `init()` function and register them by calling the store's own `listenTo()` function.
+
+```javascript
+// Creates a Store instance
+var statusStore = fluo.createStore({
+    init: function () {
         this.listenTo(statusUpdate, this.output);
     },
 
-    // Callback
-    output: function(flag) {
+    output: function (flag) {
         var status = flag ? 'ONLINE' : 'OFFLINE';
-
-        // Pass on to listeners
         this.trigger(status);
     }
-
 });
 ```
 
-In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
+In the above example, whenever the action is called, the store's `output()` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the `flag` argument in `output()` method call is `true`.
 
-A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
-
-#### Reflux.StoreMethods
-
-If you would like to have a common set of methods available to all stores you can extend the `Reflux.StoreMethods` object, which is mixed into the stores when they are created.
-
-Example usage:
-
-```javascript
-Reflux.StoreMethods.exampleMethod = function() { console.log(arguments); };
-
-statusStore.exampleMethod('arg1');
-// Should output: 'arg1'
-```
-
-#### Mixins in stores
-
-Just as you can add mixins to React components, so it is possible to add your mixins to Store.
-
-```javascript
-var MyMixin = { foo: function() { console.log('bar!'); } }
-var Store = Reflux.createStore({
-    mixins: [MyMixin]
-});
-Store.foo(); // outputs "bar!" to console
-```
-
-Methods from mixins are available as well as the methods declared in the Store. So it's possible to access store's `this` from mixin, or methods of mixin from methods of store:
-
-```javascript
-var MyMixin = { mixinMethod: function() { console.log(this.foo); } }
-var Store = Reflux.createStore({
-    mixins: [MyMixin],
-    foo: 'bar!',
-    storeMethod: function() {
-        this.mixinMethod(); // outputs "bar!" to console
-    }
-});
-```
-
-A nice feature of mixins is that if a store is using multiple mixins and several mixins define the same lifecycle method (e.g. `init`, `preEmit`, `shouldEmit`), all of the lifecycle methods are guaranteed to be called.
+A data store is a publisher much like the actions, so they too have the `preEmit()` and `shouldEmit()` hooks.
 
 #### Listening to many actions at once
 
-Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
+Since it is a very common pattern to listen to all actions from a `fluo.createActions()` call in a store `init()` call, the store has a `listenToMany()` function that takes an object of listenables. Instead of doing this:
 
 ```javascript
-var actions = Reflux.createActions(["fireBall","magicMissile"]);
+var actions = fluo.createActions([ 'fireBall', 'magicMissile' ]);
 
-var Store = Reflux.createStore({
-    init: function() {
-        this.listenTo(actions.fireBall,this.onFireBall);
-        this.listenTo(actions.magicMissile,this.onMagicMissile);
+var store = fluo.createStore({
+    init: function () {
+        this.listenTo(actions.fireBall, this.onFireBall);
+        this.listenTo(actions.magicMissile, this.onMagicMissile);
     },
-    onFireBall: function(){
+    onFireBall: function () {
         // whoooosh!
     },
-    onMagicMissile: function(){
+    onMagicMissile: function () {
         // bzzzzapp!
     }
 });
@@ -365,46 +341,50 @@ var Store = Reflux.createStore({
 ...you can do this:
 
 ```javascript
-var actions = Reflux.createActions(["fireBall","magicMissile"]);
+var actions = fluo.createActions([ 'fireBall', 'magicMissile' ]);
 
-var Store = Reflux.createStore({
-    init: function() {
+var store = fluo.createStore({
+    init: function () {
         this.listenToMany(actions);
     },
-    onFireBall: function(){
+    onFireBall: function () {
         // whoooosh!
     },
-    onMagicMissile: function(){
+    onMagicMissile: function () {
         // bzzzzapp!
     }
 });
 ```
 
-This will add listeners to all actions `actionName` who have a corresponding `onActionName` (or `actionName` if you prefer) method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
+This will add listeners to all actions `actionName` who have a corresponding `onActionName()` (or `actionName` if you prefer) method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
 
 #### The listenables shorthand
 
-To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automatically passed to `listenToMany`. So the above example can be simplified even further:
+To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automatically passed to `listenToMany()`. So the above example can be simplified even further:
 
 ```javascript
-var actions = Reflux.createActions(["fireBall","magicMissile"]);
+var actions = fluo.createActions([ 'fireBall', 'magicMissile' ]);
 
-var Store = Reflux.createStore({
+var store = fluo.createStore({
     listenables: actions,
-    onFireBall: function(){
+    onFireBall: function () {
         // whoooosh!
     },
-    onMagicMissile: function(){
+    onMagicMissile: function () {
         // bzzzzapp!
     }
 });
 ```
 
-The `listenables` property can also be an array of such objects, in which case all of them will be sent to `listenToMany`. This allows you to do convenient things like this:
+The `listenables` property can also be an array of such objects, in which case all of them will be sent to `listenToMany()`. This allows you to do convenient things like this:
 
 ```javascript
-var Store = Reflux.createStore({
-    listenables: [require('./darkspells'),require('./lightspells'),{healthChange:require('./healthstore')}],
+var Store = fluo.createStore({
+    listenables: [
+        require('./darkspells'),
+        require('./lightspells'),
+        { healthChange: require('./healthstore') }
+    ],
     // rest redacted
 });
 ```
@@ -416,9 +396,8 @@ In your component, register to listen to changes in your data store like this:
 ```javascript
 // Fairly simple view component that outputs to console
 function ConsoleComponent() {
-
     // Registers a console logging callback to the statusStore updates
-    statusStore.listen(function(status) {
+    statusStore.listen(function (status) {
         console.log('status: ', status);
     });
 };
@@ -444,23 +423,23 @@ status:  OFFLINE
 
 ### React component example
 
-Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
+Register your component to listen for changes in your data stores, preferably in the `componentDidMount()` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount()`, like this:
 
 ```javascript
-var Status = React.createClass({
-    initialize: function() { },
-    onStatusChange: function(status) {
+var Status = react.createClass({
+    initialize: function () { },
+    onStatusChange: function (status) {
         this.setState({
             currentStatus: status
         });
     },
-    componentDidMount: function() {
+    componentDidMount: function () {
         this.unsubscribe = statusStore.listen(this.onStatusChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
         this.unsubscribe();
     },
-    render: function() {
+    render: function () {
         // render specifics
     }
 });
@@ -468,80 +447,79 @@ var Status = React.createClass({
 
 #### Convenience mixin for React
 
-You always need to unsubscribe components from observed actions and stores upon
-unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.ListenerMixin`. Using that, the above example can be written like thus:
+You always need to unsubscribe components from observed actions and stores upon unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `fluo.ListenerMixin`. Using that, the above example can be written like thus:
 
 ```javascript
-var Status = React.createClass({
-    mixins: [Reflux.ListenerMixin],
-    onStatusChange: function(status) {
+var Status = react.createClass({
+    mixins: [ fluo.ListenerMixin ],
+    onStatusChange: function (status) {
         this.setState({
             currentStatus: status
         });
     },
-    componentDidMount: function() {
+    componentDidMount: function () {
         this.listenTo(statusStore, this.onStatusChange);
     },
-    render: function() {
+    render: function () {
         // render specifics
     }
 });
 ```
 
-The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you. You also get the same `listenToMany` method as the store has.
+The mixin provides the `listenTo()` method for the React component, that works much like the one found in the Fluo's stores, and handles the listeners during mount and unmount for you. You also get the same `listenToMany()` method as the store has.
 
 
-#### Using Reflux.listenTo
+#### Using fluo.listenTo()
 
-If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can instead use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
+If you're not reliant on any special logic for the `this.listenTo()` calls inside `componentDidMount()`, you can instead use a call to `fluo.listenTo()` as a mixin. That will automatically set up the `componentDidMount()` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
 
 ```javascript
-var Status = React.createClass({
-    mixins: [Reflux.listenTo(statusStore,"onStatusChange")],
-    onStatusChange: function(status) {
+var Status = react.createClass({
+    mixins: [ fluo.listenTo(statusStore, 'onStatusChange') ],
+    onStatusChange: function (status) {
         this.setState({
             currentStatus: status
         });
     },
-    render: function() {
+    render: function () {
         // render using `this.state.currentStatus`
     }
 });
 ```
 
-You can have multiple calls to `Reflux.listenTo` in the same `mixins` array.
+You can have multiple calls to `fluo.listenTo()` in the same `mixins` array.
 
-There is also `Reflux.listenToMany` which works in exactly the same way, exposing `listener.listenToMany`.
+There is also `fluo.listenToMany()` which works in exactly the same way, exposing `listener.listenToMany()`.
 
-#### Using Reflux.connect
+#### Using fluo.connect()
 
-If all you want to do is update the state of your component to whatever the data store transmits, you can use `Reflux.connect(listener,[stateKey])` as a mixin. If you supply a `stateKey` the state will be updated through `this.setState({<stateKey>:data})`, otherwise `this.setState(data)`. Here's the example above changed to use this syntax:
+If all you want to do is update the state of your component to whatever the data store transmits, you can use `fluo.connect(listener, [stateKey])` as a mixin. If you supply a `stateKey` the state will be updated through `this.setState({ <stateKey>: data })`, otherwise `this.setState(data)`. Here's the example above changed to use this syntax:
 
 ```javascript
 var Status = React.createClass({
-    mixins: [Reflux.connect(statusStore,"currentStatus")],
-    render: function() {
+    mixins: [ fluo.connect(statusStore, 'currentStatus') ],
+    render: function () {
         // render using `this.state.currentStatus`
     }
 });
 ```
 
-#### Using Reflux.connectFilter
+#### Using fluo.connectFilter
 
-`Reflux.connectFilter` is used in a similar manner to `Reflux.connect`. Use the
-`connectFilter` mixin when you want only a subset of the items in a store. A
-blog written using Reflux would probably have a store with all posts in
-it. For an individual post page, you could use `Reflux.connectFilter` to
+`fluo.connectFilter()` is used in a similar manner to `fluo.connect()`. Use the
+`connectFilter()` mixin when you want only a subset of the items in a store. A
+blog written using Fluo would probably have a store with all posts in
+it. For an individual post page, you could use `fluo.connectFilter()` to
 filter the posts to the post that's being viewed.
 
 ```javascript
 var PostView = React.createClass({
-    mixins: [Reflux.connectFilter(postStore, "post", function(posts) {
-        return posts.filter(function(post) {
-           return post.id === this.props.id;
+    mixins: [ fluo.connectFilter(postStore, 'post', function (posts) {
+        return posts.filter(function (post) {
+           return (post.id === this.props.id);
         }.bind(this))[0];
-    })],
-    render: function() {
+    }) ],
+    render: function () {
         // render using `this.state.post`
     }
 });
@@ -549,21 +527,19 @@ var PostView = React.createClass({
 
 ### Listening to changes in other data stores (aggregate data stores)
 
-A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
+A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo()` function as with actions:
 
 ```javascript
-// Creates a DataStore that listens to statusStore
-var statusHistoryStore = Reflux.createStore({
-    init: function() {
-
+// Creates a Store that listens to statusStore
+var statusHistoryStore = fluo.createStore({
+    init: function () {
         // Register statusStore's changes
         this.listenTo(statusStore, this.output);
-
         this.history = [];
     },
 
     // Callback
-    output: function(statusString) {
+    output: function (statusString) {
         this.history.push({
             date: new Date(),
             status: statusString
@@ -571,7 +547,6 @@ var statusHistoryStore = Reflux.createStore({
         // Pass the data on to listeners
         this.trigger(this.history);
     }
-
 });
 ```
 
@@ -581,12 +556,11 @@ var statusHistoryStore = Reflux.createStore({
 
 ### Switching EventEmitter
 
-Don't like to use the EventEmitter provided? You can switch to another one, such as NodeJS's own like this:
+Don't like to use the EventEmitter provided? You can switch to another one, such as node.js's own like this:
 
 ```javascript
 // Do this before creating actions or stores
-
-Reflux.setEventEmitter(require('events').EventEmitter);
+fluo.setEventEmitter(require('events').EventEmitter);
 ```
 
 ### Switching Promise library
@@ -595,42 +569,39 @@ Don't like to use the Promise library provided? You can switch to another one, s
 
 ```javascript
 // Do this before triggering actions
-
-Reflux.setPromise(require('bluebird'));
+fluo.setPromise(require('bluebird'));
 ```
 
-*Note that promises are constructed with `new Promise(...)`.  If your Promise library uses factories (e.g. `Q`), then use `Reflux.setPromiseFactory` instead.*
+> Note that promises are constructed with `new Promise(...)`.  If your Promise library uses factories (e.g. `Q`), then use `fluo.setPromiseFactory()` instead.
 
 ### Switching Promise factory
 
 Since most Promise libraries use constructors (e.g. `new Promise(...)`), this is the default behavior.
 
-However, if you use `Q` or another library that uses a factory method, you can use `Reflux.setPromiseFactory` for it.
+However, if you use `Q` or another library that uses a factory method, you can use `fluo.setPromiseFactory()` for it.
 
 ```javascript
 // Do this before triggering actions
-
-Reflux.setPromiseFactory(require('Q').Promise);
+fluo.setPromiseFactory(require('Q').Promise);
 ```
 
-### Switching nextTick
+### Switching nextTick()
 
-Whenever action functors are called, they return immediately through the use of `setTimeout` (`nextTick` function) internally.
+Whenever action functors are called (except via `Action#triggerSync()`), they return immediately through the use of `setTimeout()` (`nextTick()` function) internally.
 
-You may switch out for your favorite `setTimeout`, `nextTick`, `setImmediate`, et al implementation:
+You may switch out for your favorite `setTimeout()`, `nextTick()`, `setImmediate()`, et al implementation:
 
 ```javascript
-
 // node.js env
-Reflux.nextTick(process.nextTick);
+fluo.nextTick(process.nextTick);
 ```
 
-For better alternative to `setTimeout`, you may opt to use the [`setImmediate` polyfill](https://github.com/YuzuJS/setImmediate), [`setImmediate2`](https://github.com/Katochimoto/setImmediate) or [`macrotask`](https://github.com/calvinmetcalf/macrotask).
+For better alternative to `setTimeout()`, you may opt to use the [`setImmediate()` polyfill](https://github.com/YuzuJS/setImmediate), [`setImmediate2`](https://github.com/Katochimoto/setImmediate) or [`macrotask`](https://github.com/calvinmetcalf/macrotask).
 
 
 ### Joining parallel listeners with composed listenables
 
-The Reflux API contains `join` methods that makes it easy to aggregate publishers that emit events in parallel. This corresponds to the `waitFor` method in Flux.
+The Fluo API contains `join*()` methods that makes it easy to aggregate publishers that emit events in parallel. This corresponds with the `waitFor()` mechanism in Flux.
 
 #### Argument tracking
 
@@ -638,84 +609,90 @@ A join is triggered once all participating publishers have emitted at least once
 
 There are four join methods, each representing a different strategy to track the emission data:
 
-*    `joinLeading`: Only the first emission from each publisher is saved. Subsequent emissions by the same publisher before all others are finished are ignored.
-*    `joinTrailing`: If a publisher triggers twice, the second emission overwrites the first.
-*    `joinConcat`: An array of emission arguments are stored for each publisher.
-*    `joinStrict`: An error is thrown if a publisher emits twice before the join is completed.
+*    `joinLeading()`: Only the first emission from each publisher is saved. Subsequent emissions by the same publisher before all others are finished are ignored.
+*    `joinTrailing()`: If a publisher triggers twice, the second emission overwrites the first.
+*    `joinConcat()`: An array of emission arguments are stored for each publisher.
+*    `joinStrict()`: An error is thrown if a publisher emits twice before the join is completed.
 
 The method signatures all look like this:
 
 ```javascript
-joinXyz(...publisher,callback)
+join*(...publisher, callback)
 ```
 
-Once a join is triggered it will reset, and thus it can trigger again when all publishers have emitted anew.
+Once a join is triggered, it will reset, and thus it can trigger again when all publishers have emitted anew.
 
 #### Using the listener instance methods
 
 All objects using the listener API (stores, React components using `ListenerMixin`, or other components using the `ListenerMethods`) gain access to the four join instance methods, named after the argument strategy. Here's an example saving the last emission from each publisher:
 
 ```javascript
-var gainHeroBadgeStore = Reflux.createStore({
-    init: function() {
-        this.joinTrailing(actions.disarmBomb, actions.saveHostage, actions.recoverData, this.triggerAsync);
+var gainHeroBadgeStore = fluo.createStore({
+    init: function () {
+        this.joinTrailing(
+            actions.disarmBomb,
+            actions.saveHostage,
+            actions.recoverData,
+            this.trigger
+        );
     }
 });
 
-actions.disarmBomb("warehouse");
-actions.recoverData("seedyletter");
-actions.disarmBomb("docks");
-actions.saveHostage("offices",3);
-// `gainHeroBadgeStore` will now asyncronously trigger `[["docks"],["offices",3],["seedyletter"]]`.
+actions.disarmBomb('warehouse');
+actions.recoverData('seedyletter');
+actions.disarmBomb('docks');
+actions.saveHostage('offices', 3);
+// `gainHeroBadgeStore` will now asyncronously trigger `[[ 'docks' ], [ 'offices', 3 ], [ 'seedyletter' ]]`.
 ```
 
 #### Using the static methods
 
-Since it is rather common to have a store where the only purpose is to listen to a join and trigger when the join is completed, the join methods have static counterparts on the `Reflux` object which return stores listening to the requested join. Using them, the store in the example above could instead be created like this:
+Since it is rather common to have a store where the only purpose is to listen to a join and trigger when the join is completed, the join methods have static counterparts on the `fluo` object which return stores listening to the requested join. Using them, the store in the example above could instead be created like this:
 
 ```javascript
-var gainHeroBadgeStore = Reflux.joinTrailing(actions.disarmBomb, actions.saveHostage, actions.recoverData);
+var gainHeroBadgeStore = fluo.joinTrailing(
+    actions.disarmBomb,
+    actions.saveHostage,
+    actions.recoverData
+);
 ```
 
 ### Sending initial state with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialState` is returning.
+The `listenTo()` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialState()` is returning.
 
 ```javascript
-var exampleStore = Reflux.createStore({
-    init: function() {},
-    getInitialState: function() {
-        return "the initial data";
+var exampleStore = fluo.createStore({
+    init: function () {},
+    getInitialState: function () {
+        return 'the initial data';
     }
 });
 
 // Anything that will listen to the example store
 this.listenTo(exampleStore, onChangeCallback, initialCallback)
 
-// initialCallback will be invoked immediately with "the initial data" as first argument
+// initialCallback will be invoked immediately with 'the initial data' as the first argument
 ```
 
-Remember the `listenToMany` method? In case you use that with other stores, it supports `getInitialState`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+Remember the `listenToMany()` method? In case you use that with other stores, it supports `getInitialState()`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default()` method if that exists.
 
 [Back to top](#content)
 
 ## Colophon
 
-[List of contributors](https://github.com/spoike/reflux/graphs/contributors) is available on Github.
+[List of contributors](https://github.com/spoike/fluo/graphs/contributors) is available on Github.
 
-This project is licensed under [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause). Copyright (c) 2014, Mikael Brassman.
+This project is licensed under [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause). Copyright (c) 2014, Mikael Brassman, Jan Kuča.
 
 For more information about the license for this particular project [read the LICENSE.md file](LICENSE.md).
 
 This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is currently MIT licensed and [has it's license information here](https://github.com/3rd-Eden/EventEmitter3/blob/master/LICENSE).
 
-[npm-image]: http://img.shields.io/npm/v/reflux.svg
-[downloads-image]: http://img.shields.io/npm/dm/reflux.svg
-[dependencies-image]: http://img.shields.io/david/spoike/refluxjs.svg
-[npm-url]: https://www.npmjs.org/package/reflux
-[bower-image]: http://img.shields.io/bower/v/reflux.svg
-[bower-url]: http://bower.io/search/?q=reflux
-[travis-image]: http://img.shields.io/travis/spoike/refluxjs/master.svg
-[travis-url]: https://travis-ci.org/spoike/refluxjs
-[gratipay-image]: http://img.shields.io/gratipay/spoike.svg
-[gratipay-url]: https://gratipay.com/spoike/
+[npm-image]: http://img.shields.io/npm/v/fluo.svg
+[npm-url]: http://www.npmjs.org/package/fluo
+[downloads-image]: http://img.shields.io/npm/dm/fluo.svg
+[bower-image]: http://img.shields.io/bower/v/fluo.svg
+[bower-url]: http://bower.io/search/?q=fluo
+[travis-image]: http://img.shields.io/travis/jankuca/fluo/master.svg
+[travis-url]: https://travis-ci.org/jankuca/fluo

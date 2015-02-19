@@ -1,17 +1,20 @@
 {
-  "name": "reflux",
-  "version": "0.2.4",
+  "name": "fluo",
+  "version": "0.1.0",
   "homepage": "https://github.com/spoike/reflux",
   "authors": [
-    "Mikael Brassman <mishakun@gmail.com>"
+    "Mikael Brassman <mishakun@gmail.com>",
+    "Jan Kuča <jan@jankuca.com> (http://jankuca.com)"
   ],
-  "description": "A simple library for uni-directional dataflow architecture inspired by ReactJS Flux",
-  "main": "dist/reflux.js",
+  "description": "A prototype-based fork of the Reflux data flow library similar to Facebook Flux",
+  "main": "dist/fluo.js",
   "keywords": [
     "action",
     "event",
     "data",
     "flux",
+    "reflux",
+    "fluo",
     "reactjs"
   ],
   "license": "BSD-3-Clause",
