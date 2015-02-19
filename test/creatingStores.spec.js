@@ -279,46 +279,6 @@ describe('Creating stores', function() {
         assert.equal(store.blah,def.blah);
     });
 
-    it("should fail when trying to override API methods",function(){
-        assert.throws(function(){
-            Reflux.createStore({listenTo:"FOO"});
-        });
-        assert.throws(function(){
-            Reflux.createStore({listen:"BAR"});
-        });
-    });
-
-    it("should include ListenerMethods",function(){
-        for(var m in Reflux.ListenerMethods){
-            assert.equal(Reflux.createStore({})[m],Reflux.ListenerMethods[m]);
-        }
-    });
-
-    it("should include PublisherMethods",function(){
-        for(var m in Reflux.PublisherMethods){
-            assert.equal(Reflux.createStore({})[m],Reflux.PublisherMethods[m]);
-        }
-    });
-
-    it("should copy properties from Reflux.StoreMethods into the store",function(){
-        Reflux.StoreMethods = {preEmit: function() {}, exampleFn: function() {}};
-        var store = Reflux.createStore();
-        assert.equal(store.preEmit, Reflux.StoreMethods.preEmit);
-        assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
-    });
-
-    it("should fail when trying to override API methods in Reflux.StoreMethods",function(){
-        Reflux.StoreMethods = { listen: "BAR" };
-        assert.throws(function(){
-            Reflux.createStore({});
-        });
-    });
-
-    it("should not mix in its own methods into ListenerMethods",function(){
-        assert.isUndefined(Reflux.ListenerMethods.listen);
-        assert.isUndefined(Reflux.ListenerMethods.trigger);
-    });
-
     describe('store methods', function() {
         var initReflect,
             store = Reflux.createStore({

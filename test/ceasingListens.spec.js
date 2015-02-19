@@ -18,22 +18,22 @@ describe('Stopping',function(){
     });
     describe('a join',function(){
         var store = Store(),
-            action1 = Action({sync:true}),
-            action2 = Action({sync:true}),
-            action3 = Action({sync:true}),
+            action1 = Action(),
+            action2 = Action(),
+            action3 = Action(),
             indivcallback = sinon.spy(),
             joincallback = sinon.spy(),
             subobj;
         store.listenTo(action2,indivcallback);
         subobj = store.joinLeading(action1,action2,action3,joincallback);
         subobj.stop();
-        action1("A");
-        action2("B");
-        action3("C");
+        action1.triggerSync("A");
+        action2.triggerSync("B");
+        action3.triggerSync("C");
         it('should leave the individual listening intact',function(){
             assert.equal(store.subscriptions.length,1);
             assert.equal(store.subscriptions[0].listenable,action2);
-            action2("foo","bar");
+            action2.triggerSync("foo","bar");
             assert.deepEqual(["foo","bar"],indivcallback.lastCall.args);
         });
         it('should not fire join callback anymore',function(done){

@@ -1,37 +1,32 @@
-exports.ActionMethods = require('./ActionMethods');
+var _ = require('./utils');
 
-exports.ListenerMethods = require('./ListenerMethods');
+var staticJoinCreator = require('./staticJoinCreator');
 
-exports.PublisherMethods = require('./PublisherMethods');
 
-exports.StoreMethods = require('./StoreMethods');
+exports.Action = require('./Action');
+exports.Listener = require('./Listener');
+exports.Publisher = require('./Publisher');
+exports.Store = require('./Store');
 
 exports.createAction = require('./createAction');
-
 exports.createStore = require('./createStore');
 
 exports.connect = require('./connect');
-
 exports.connectFilter = require('./connectFilter');
 
 exports.ListenerMixin = require('./ListenerMixin');
+exports.PublisherMixin = require('./PublisherMixin');
 
 exports.listenTo = require('./listenTo');
-
 exports.listenToMany = require('./listenToMany');
 
 
-var maker = require('./joins').staticJoinCreator;
 
-exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
+exports.joinTrailing = exports.all = staticJoinCreator("last"); // Reflux.all alias for backward compatibility
+exports.joinLeading = staticJoinCreator("first");
+exports.joinStrict = staticJoinCreator("strict");
+exports.joinConcat = staticJoinCreator("all");
 
-exports.joinLeading = maker("first");
-
-exports.joinStrict = maker("strict");
-
-exports.joinConcat = maker("all");
-
-var _ = require('./utils');
 
 /**
  * Convenience function for creating a set of actions
@@ -41,11 +36,11 @@ var _ = require('./utils');
  */
 exports.createActions = function(definitions) {
     var actions = {};
-    for (var k in definitions){
-        var val = definitions[k],
-            actionName = _.isObject(val) ? k : val;
+    for (var k in definitions) {
+        var val = definitions[k];
+        var actionType = _.isObject(val) ? k : val;
 
-        actions[actionName] = exports.createAction(val);
+        actions[actionType] = exports.createAction(val);
     }
     return actions;
 };
@@ -88,7 +83,7 @@ exports.nextTick = function(nextTick) {
 /**
  * Provides the set of created actions and stores for introspection
  */
-exports.__keep = require('./Keep');
+exports.__keep = require('./keep');
 
 /**
  * Warn if Function.prototype.bind not available

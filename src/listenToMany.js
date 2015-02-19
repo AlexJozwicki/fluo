@@ -1,4 +1,7 @@
-var Reflux = require('./index');
+var _ = require('./utils');
+
+var Listener = require('./Listener');
+
 
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
@@ -15,19 +18,16 @@ module.exports = function(listenables){
          * and then make the call to `listenTo` with the arguments provided to the factory function
          */
         componentDidMount: function() {
-            for(var m in Reflux.ListenerMethods){
-                if (this[m] !== Reflux.ListenerMethods[m]){
-                    if (this[m]){
-                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
-                    }
-                    this[m] = Reflux.ListenerMethods[m];
-                }
-            }
+            this.__listener = new Listener();
+            _.link(this.__listener, this);
+
             this.listenToMany(listenables);
         },
         /**
          * Cleans up all listener previously registered.
          */
-        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+        componentWillUnmount: function () {
+            this.__listener.stopListeningToAll();
+        }
     };
 };

@@ -16,8 +16,12 @@ describe('Creating action', function() {
     });
 
     it("should copy properties from the definition into the action",function(){
-        var def = {preEmit:"PRE",shouldEmit:"SHO",random:"RAN"},
-            action = Reflux.createAction(def);
+        var def = {
+            preEmit: function () { return "PRE"; },
+            shouldEmit: function () { return "SHO"; },
+            random: function () { return "RAN"; }
+        };
+        var action = Reflux.createAction(def);
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
         assert.equal(action.random, def.random);
@@ -35,42 +39,13 @@ describe('Creating action', function() {
     });
 
     it("should create completed and failed child actions for async actions",function(){
-        var def = {asyncResult: true, sync: true},
+        var def = {asyncResult: true},
             action = Reflux.createAction(def);
 
         assert.equal(action.asyncResult, true);
         assert.deepEqual(action.children, ["completed", "failed"]);
         assert.equal(action.completed._isAction, true);
         assert.equal(action.failed._isAction, true);
-    });
-
-
-    it("should throw an error if you overwrite any API other than preEmit and shouldEmit",function(){
-        assert.throws(function(){
-            Reflux.createAction({listen:"FOO"});
-        });
-    });
-
-    describe('Reflux.ActionMethods', function() {
-
-      afterEach(function(){
-          Reflux.ActionMethods = {};
-      });
-
-      it("should copy properties from Reflux.ActionMethods into the action",function(){
-          Reflux.ActionMethods = {preEmit: function() {}, exampleFn: function() {}};
-          var action = Reflux.createAction();
-          assert.equal(action.preEmit, Reflux.ActionMethods.preEmit);
-          assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
-      });
-
-      it("should throw an error if you overwrite any API other than preEmit and shouldEmit in Reflux.ActionMethods",function(){
-        Reflux.ActionMethods.listen = "FOO";
-          assert.throws(function(){
-              Reflux.createAction({});
-          });
-      });
-
     });
 
     var action,
@@ -83,49 +58,6 @@ describe('Creating action', function() {
 
     it('should be a callable functor', function() {
         assert.isFunction(action);
-    });
-
-    describe("the synchronisity",function(){
-        var syncaction = Reflux.createAction({sync:true}),
-            asyncaction = Reflux.createAction(),
-            synccalled = false,
-            asynccalled = false,
-            store = Reflux.createStore({
-                sync: function(){synccalled=true;},
-                async: function(){asynccalled=true;}
-            });
-        store.listenTo(syncaction,"sync");
-        store.listenTo(asyncaction,"async");
-        it("should be asynchronous when not specified",function(){
-            asyncaction();
-            assert.equal(false,asynccalled);
-        });
-        it("should be synchronous if requested",function(){
-            syncaction();
-            assert.equal(true,synccalled);
-        });
-        describe("when changed during lifetime",function(){
-            var syncaction = Reflux.createAction({sync:true}),
-            asyncaction = Reflux.createAction(),
-            synccalled = false,
-            asynccalled = false,
-            store = Reflux.createStore({
-                sync: function(){synccalled=true;},
-                async: function(){asynccalled=true;}
-            });
-            store.listenTo(syncaction,"sync");
-            store.listenTo(asyncaction,"async");
-            it("should be asynchronous if initial sync was overridden",function(){
-                syncaction.sync = false;
-                syncaction();
-                assert.equal(false,synccalled);
-            });
-            it("should be synchronous if set during lifetime",function(){
-                asyncaction.sync = true;
-                asyncaction();
-                assert.equal(true,asynccalled);
-            });
-        });
     });
 
     describe('when listening to action', function() {
@@ -160,16 +92,14 @@ describe('Creating action', function() {
         });
 
         describe('when adding shouldEmit hook',function(){
-            var context = {
-                validateListening:function(){},
-                fetchInitialState:function(){}
-            };
-
             describe("when hook returns true",function(){
                 var shouldEmit = sinon.stub().returns(true),
                     action = Reflux.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
-                Reflux.ListenerMethods.listenTo.call(context,action,callback);
+
+                var listener = new Reflux.Listener();
+                listener.listenTo(action,callback);
+
                 action(1337,'test');
 
                 it('should receive arguments from action functor', function() {
@@ -187,7 +117,10 @@ describe('Creating action', function() {
                 var shouldEmit = sinon.stub().returns(false),
                     action = Reflux.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
-                Reflux.ListenerMethods.listenTo.call(context,action,callback);
+
+                var listener = new Reflux.Listener();
+                listener.listenTo(action,callback);
+
                 action(1337,'test');
 
                 it('should receive arguments from action functor', function() {
@@ -217,11 +150,11 @@ describe('Creating actions with children to an action definition object', functi
     });
 
     it('should contain action functor on foo and bar properties with children', function() {
-        assert.isFunction(actions.foo);
-        assert.isFunction(actions.foo.completed);
-        assert.isFunction(actions.foo.failed);
-        assert.isFunction(actions.bar);
-        assert.isFunction(actions.bar.baz);
+        assert.instanceOf(actions.foo, Reflux.Action);
+        assert.instanceOf(actions.foo.completed, Reflux.Action);
+        assert.instanceOf(actions.foo.failed, Reflux.Action);
+        assert.instanceOf(actions.bar, Reflux.Action);
+        assert.instanceOf(actions.bar.baz, Reflux.Action);
     });
 
     describe('when listening to the child action created this way', function() {
@@ -291,8 +224,8 @@ describe('Creating multiple actions to an action definition object', function() 
     });
 
     it('should contain action functor on foo and bar properties', function() {
-        assert.isFunction(actions.foo);
-        assert.isFunction(actions.bar);
+        assert.instanceOf(actions.foo, Reflux.Action);
+        assert.instanceOf(actions.bar, Reflux.Action);
     });
 
     describe('when listening to any of the actions created this way', function() {

@@ -4,6 +4,7 @@
     "curly": true,
     "unused": true,
     "undef": true,
+    "proto": true,
 
     "browser": true,
     "devel": true,

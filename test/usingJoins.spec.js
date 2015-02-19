@@ -71,9 +71,9 @@ describe('using joins',function(){
                 spy;
 
             beforeEach(function() {
-                action1 = Reflux.createAction({sync: false});
-                action2 = Reflux.createAction({sync: false});
-                action3 = Reflux.createAction({sync: false});
+                action1 = Reflux.createAction();
+                action2 = Reflux.createAction();
+                action3 = Reflux.createAction();
                 join = Reflux.joinStrict(action1,action2,action3);
                 spy = sinon.spy();
 
@@ -81,9 +81,9 @@ describe('using joins',function(){
             });
 
             it("should emit with the arguments",function(done){
-                action1('a');
-                action2('b');
-                action3('c');
+                action1.triggerSync('a');
+                action2.triggerSync('b');
+                action3.triggerSync('c');
 
                 setTimeout(function() {
                     assert.equal(spy.callCount,1);
@@ -93,9 +93,9 @@ describe('using joins',function(){
             });
 
             it("should throw error if triggered more than once",function(){
-                action1.trigger('a'); // sync trigger to make sure error is correctly caught
+                action1.triggerSync('a'); // sync trigger to make sure error is correctly caught
                 assert.throws(function(){
-                    action1.trigger('x');
+                    action1.triggerSync('x');
                 });
             });
         });
@@ -200,18 +200,18 @@ describe('using joins',function(){
                 spy;
 
             beforeEach(function () {
-                action1 = Reflux.createAction({sync: true});
-                action2 = Reflux.createAction({sync: true});
-                action3 = Reflux.createAction({sync: true});
+                action1 = Reflux.createAction();
+                action2 = Reflux.createAction();
+                action3 = Reflux.createAction();
                 store = Reflux.createStore();
                 spy = sinon.spy();
                 store.joinStrict(action1,action2,action3,spy);
             });
 
             it("should emit with the arguments",function(done){
-                action1('a');
-                action2('b');
-                action3('c');
+                action1.triggerSync('a');
+                action2.triggerSync('b');
+                action3.triggerSync('c');
 
                 setTimeout(function() {
                     assert.equal(spy.callCount,1);
@@ -220,9 +220,9 @@ describe('using joins',function(){
                 }, 10);
             });
             it("should throw error if triggered more than once",function(){
-                action1.trigger('a'); // sync trigger to be able to test
+                action1.triggerSync('a'); // sync trigger to be able to test
                 assert.throws(function(){
-                    action1.trigger('x');
+                    action1.triggerSync('x');
                 });
             });
         });

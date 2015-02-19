@@ -126,12 +126,12 @@ describe('Composed listenable with stores', function() {
         action = Reflux.createAction();
         store1 = Reflux.createStore({
             init: function() {
-                this.listenTo(action, this.trigger);
+                this.listenTo(action, this.triggerSync);
             }
         });
         store2 = Reflux.createStore({
             init: function() {
-                this.listenTo(action, this.trigger);
+                this.listenTo(action, this.triggerSync);
             }
         });
         all = Reflux.all(store1, store2);
@@ -156,7 +156,7 @@ describe('Composed listenable with stores', function() {
         beforeEach(function () {
             storeAll = Reflux.createStore({
                 init: function() {
-                    this.listenTo(all, this.trigger);
+                    this.listenTo(all, this.triggerSync);
                 }
             });
         });
@@ -187,7 +187,7 @@ describe('Composed listenable with stores', function() {
             beforeEach(function () {
                 anotherAction = Reflux.createAction();
                 Component = function() {
-                    this.listenTo(storeAll, this.trigger);
+                    this.listenTo(storeAll, this.triggerSync);
                     this.listenTo(anotherAction);
                 };
                 _.extend(Component.prototype, Reflux.ListenerMixin);

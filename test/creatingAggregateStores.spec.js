@@ -20,8 +20,8 @@ describe('Creating aggregate stores', function() {
                 action = Reflux.createAction();
                 store = Reflux.createStore({
                     init: function() {
-                        this.listenTo(action, this.trigger);
-                        // pass to the trigger function immediately
+                        this.listenTo(action, this.triggerSync);
+                        // pass to the triggerSync function immediately
                     }
                 });
                 aggregateStore = Reflux.createStore({

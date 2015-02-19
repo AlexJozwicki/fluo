@@ -1,4 +1,6 @@
-var Reflux = require('./index');
+var _ = require('./utils');
+
+var Listener = require('./Listener');
 
 
 /**
@@ -18,19 +20,16 @@ module.exports = function(listenable,callback,initial){
          * and then make the call to `listenTo` with the arguments provided to the factory function
          */
         componentDidMount: function() {
-            for(var m in Reflux.ListenerMethods){
-                if (this[m] !== Reflux.ListenerMethods[m]){
-                    if (this[m]){
-                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
-                    }
-                    this[m] = Reflux.ListenerMethods[m];
-                }
-            }
-            this.listenTo(listenable,callback,initial);
+            this.__listener = new Listener();
+            _.link(this.__listener, this);
+
+            this.listenTo(listenable, callback, initial);
         },
         /**
          * Cleans up all listener previously registered.
          */
-        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+        componentWillUnmount: function () {
+            this.__listener.stopListeningToAll();
+        }
     };
 };

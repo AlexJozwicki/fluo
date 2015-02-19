@@ -1,22 +1,38 @@
-var Reflux = require('./index'),
-    _ = require('./utils');
+var _ = require('./utils');
 
-module.exports = function(listenable,key){
+var Listener = require('./Listener');
+
+
+module.exports = function connect(listenable, key) {
     return {
-        getInitialState: function(){
+        getInitialState: function () {
             if (!_.isFunction(listenable.getInitialState)) {
                 return {};
-            } else if (key === undefined) {
+            } else if (typeof key === 'undefined') {
                 return listenable.getInitialState();
             } else {
-                return _.object([key],[listenable.getInitialState()]);
+                var state = {};
+                state[key] = listenable.getInitialState();
+                return state;
             }
         },
-        componentDidMount: function(){
-            _.extend(this,Reflux.ListenerMethods);
-            var me = this, cb = (key === undefined ? this.setState : function(v){me.setState(_.object([key],[v]));});
-            this.listenTo(listenable,cb);
+        componentDidMount: function () {
+            this.__listener = new Listener();
+            _.link(this.__listener, this);
+
+            if (typeof key === 'undefined') {
+                this.listenTo(listenable, this.setState);
+            } else {
+                var self = this;
+                this.listenTo(listenable, function (state) {
+                    var container = {};
+                    container[key] = state;
+                    self.setState(container);
+                });
+            }
         },
-        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+        componentWillUnmount: function () {
+          this.__listener.stopListeningToAll();
+        }
     };
 };

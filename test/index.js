@@ -16,7 +16,7 @@ var textStore = Reflux.createStore({
         }
     },
     writeOut: function(text) {
-        this.trigger(text);
+        this.triggerSync(text);
     }
 });
 
@@ -27,7 +27,7 @@ var statusStore = Reflux.createStore({
     },
     output: function(flag) {
         var status = flag ? 'ONLINE' : 'OFFLINE';
-        this.trigger(status);
+        this.triggerSync(status);
     }
 });
 
@@ -40,7 +40,7 @@ var storyStore = Reflux.createStore({
     },
     statusChanged: function(flag) {
         if (flag === 'OFFLINE') {
-            this.trigger('Once upon a time the user did the following: ' + this.storyArr.join(', '));
+            this.triggerSync('Once upon a time the user did the following: ' + this.storyArr.join(', '));
             // empty storyArr
             this.storyArr.splice(0, this.storyArr.length);
         }

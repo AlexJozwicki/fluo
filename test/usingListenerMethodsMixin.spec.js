@@ -3,9 +3,7 @@ var chai = require('chai'),
     Reflux = require('../src'),
     sinon = require('sinon');
 
-describe("using the ListenerMethods",function(){
-    var ListenerMethods = Reflux.ListenerMethods;
-
+describe("using the ListenerMixin",function(){
     describe("the listenToMany function",function(){
         var listenables = { foo: "FOO", bar: "BAR", baz: "BAZ", missing: "MISSING", parent: {
                 children: ['foo', 'bar', 'baz', "notThere"], foo: "FOOChild", bar: "BARChild", baz: "BAZChild"
@@ -37,7 +35,7 @@ describe("using the ListenerMethods",function(){
     });
 
     describe("the listenTo function",function(){
-        var listenTo = ListenerMethods.listenTo;
+        var listenTo = Reflux.ListenerMixin.listenTo;
 
         it("will throw error if validation of listenable returns text",function(){
             var errormsg = "ERROR! ERROR!",
@@ -101,7 +99,7 @@ describe("using the ListenerMethods",function(){
                 context = {
                     defcb: sinon.spy()
                 };
-            ListenerMethods.fetchInitialState.call(context,listenable,"defcb");
+            Reflux.ListenerMixin.fetchInitialState.call(context,listenable,"defcb");
 
             it("calls getInitialState on the publisher",function(){
                 assert.equal(listenable.getInitialState.callCount,1);

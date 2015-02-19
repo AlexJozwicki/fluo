@@ -41,7 +41,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         beforeEach(function () {
             store = Reflux.createStore({
                 init: function() {
-                    this.listenTo(action, this.trigger);
+                    this.listenTo(action, this.triggerSync);
                 }
             });
 
@@ -92,21 +92,6 @@ describe('Managing subscriptions via ListenerMixin', function() {
             mountComponent();
             return assert.eventually.equal(promise, 'initial state');
         });
-    });
-
-    it("should include ListenerMethods",function(){
-        var s = Reflux.createStore({});
-        for(var m in Reflux.ListenerMethods){
-            assert.equal(s[m],Reflux.ListenerMethods[m]);
-        }
-    });
-
-    it("should use ListenerMethods.stopListeningToAll as componentWillUnmount",function(){
-        assert.equal(Reflux.ListenerMixin.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
-    });
-
-    it("should not mix in its own methods into ListenerMethods",function(){
-        assert.isUndefined(Reflux.ListenerMethods.componentWillUnmount);
     });
 
 });

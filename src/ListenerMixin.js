@@ -1,5 +1,8 @@
-var _ = require('./utils'),
-    ListenerMethods = require('./ListenerMethods');
+
+var Listener = require('./Listener');
+
+var slice = Array.prototype.slice;
+
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
@@ -7,11 +10,20 @@ var _ = require('./utils'),
  * Note that if you're using the `connect` mixin you don't need this mixin, as connect will
  * import everything this mixin contains!
  */
-module.exports = _.extend({
 
-    /**
-     * Cleans up all listener previously registered.
-     */
-    componentWillUnmount: ListenerMethods.stopListeningToAll
+var listener = new Listener();
 
-}, ListenerMethods);
+listener.listenTo = function () {
+  this.subscriptions = this.subscriptions || [];
+  return Listener.prototype.listenTo.apply(this, slice.call(arguments));
+};
+
+/**
+ * Cleans up all listener previously registered.
+ */
+listener.componentWillUnmount = function () {
+  this.stopListeningToAll();
+};
+
+
+module.exports = listener;

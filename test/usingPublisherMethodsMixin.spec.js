@@ -7,20 +7,22 @@ var chai = require('chai'),
 
 chai.use(require('chai-as-promised'));
 
-describe("using the publisher methods mixin",function(){
-    var pub = Reflux.PublisherMethods;
+describe("using the PublisherMixin",function(){
+    var pub = Reflux.PublisherMixin;
 
     describe("the promise method",function(){
 
         describe("when the promise completes",function(){
-            var deferred = Q.defer(),
-                promise = deferred.promise,
-                context = {
-                    children:['completed','failed'],
-                    completed:sinon.spy(),
-                    failed:sinon.spy()
-                },
-                result = pub.promise.call(context,promise);
+            var deferred = Q.defer();
+            var promise = deferred.promise;
+            var context = {
+                children:['completed','failed'],
+                completed: { trigger: sinon.spy() },
+                failed: { trigger: sinon.spy() }
+            };
+
+            pub.children = context.children;
+            var result = pub.promise.call(context,promise);
 
             deferred.resolve('foo');
 
@@ -29,24 +31,26 @@ describe("using the publisher methods mixin",function(){
             });
 
             it("should call the completed child trigger",function(){
-                var args = context.completed.firstCall.args;
+                var args = context.completed.trigger.firstCall.args;
                 assert.deepEqual(args, ["foo"]);
             });
 
             it("should not call the failed child trigger",function(){
-                assert.equal(context.failed.callCount, 0);
+                assert.equal(context.failed.trigger.callCount, 0);
             });
         });
 
         describe("when the promise fails",function(){
-            var deferred = Q.defer(),
-                promise = deferred.promise,
-                context = {
-                    children:['completed','failed'],
-                    completed:sinon.spy(),
-                    failed:sinon.spy()
-                },
-                result = pub.promise.call(context,promise);
+            var deferred = Q.defer();
+            var promise = deferred.promise;
+            var context = {
+                children:['completed','failed'],
+                completed: { trigger: sinon.spy() },
+                failed: { trigger: sinon.spy() }
+            };
+
+            pub.children = context.children;
+            var result = pub.promise.call(context,promise);
 
             deferred.reject('bar');
 
@@ -55,12 +59,12 @@ describe("using the publisher methods mixin",function(){
             });
 
             it("should call the failed child trigger",function(){
-                var args = context.failed.firstCall.args;
+                var args = context.failed.trigger.firstCall.args;
                 assert.deepEqual(args, ["bar"]);
             });
 
             it("should not the completed child trigger",function(){
-                assert.equal(context.completed.callCount, 0);
+                assert.equal(context.completed.trigger.callCount, 0);
             });
         });
     });
@@ -72,7 +76,7 @@ describe("using the publisher methods mixin",function(){
             },
             context = {
                 emitter: emitter,
-                eventLabel: "LABEL",
+                eventType: "LABEL",
             },
             callback = sinon.spy(),
             cbcontext = {foo:"BAR"},
@@ -80,7 +84,7 @@ describe("using the publisher methods mixin",function(){
 
         it("should call addListener correctly",function(){
             var args = emitter.addListener.firstCall.args;
-            assert.equal(args[0],context.eventLabel);
+            assert.equal(args[0],context.eventType);
             assert.isFunction(args[1]);
             args[1](["ARG1","ARG2"]);
             assert.deepEqual(callback.firstCall.args,["ARG1","ARG2"]);
@@ -95,7 +99,7 @@ describe("using the publisher methods mixin",function(){
 
             it("should remove the listener correctly",function(){
                 result();
-                assert.deepEqual(emitter.removeListener.firstCall.args,[context.eventLabel,emitter.addListener.firstCall.args[1]]);
+                assert.deepEqual(emitter.removeListener.firstCall.args,[context.eventType,emitter.addListener.firstCall.args[1]]);
             });
         });
     });
@@ -109,12 +113,12 @@ describe("using the publisher methods mixin",function(){
                         emit: sinon.spy()
                     },
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.spy(),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.call(context,"FOO","BAR");
+                pub.triggerSync.call(context,"FOO","BAR");
 
                 it("should call preEmit correctly",function(){
                     assert.deepEqual(context.preEmit.firstCall.args,["FOO","BAR"]);
@@ -140,12 +144,12 @@ describe("using the publisher methods mixin",function(){
                     oldargs = ["what","ever"],
                     newargs = ["foo","bar"],
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.stub().returns(newargs),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should call shouldEmit with the changed args",function(){
                     assert.deepEqual(context.shouldEmit.firstCall.args,newargs);
@@ -165,12 +169,12 @@ describe("using the publisher methods mixin",function(){
                     },
                     oldargs = ["what","ever"],
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:function(){return arguments;},
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should correctly call shouldEmit as if we returned an array",function(){
                     assert.deepEqual(oldargs,context.shouldEmit.firstCall.args);
@@ -191,12 +195,12 @@ describe("using the publisher methods mixin",function(){
                     oldargs = ["what","ever"],
                     newarg = "I SHOULD BE USED AS A SINGLE ARG",
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.stub().returns(newarg),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should call shouldEmit with the string",function(){
                     assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
@@ -216,12 +220,12 @@ describe("using the publisher methods mixin",function(){
                     oldargs = ["what","ever"],
                     newarg = 12345,
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.stub().returns(newarg),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should call shouldEmit with the number",function(){
                     assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
@@ -241,12 +245,12 @@ describe("using the publisher methods mixin",function(){
                     oldargs = ["what","ever"],
                     newarg = false,
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.stub().returns(newarg),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should call shouldEmit with false",function(){
                     assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
@@ -266,12 +270,12 @@ describe("using the publisher methods mixin",function(){
                     oldargs = ["what","ever"],
                     newarg = {a:"foo",b:"bar"},
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.stub().returns(newarg),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should call shouldEmit with the object",function(){
                     assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
@@ -291,12 +295,12 @@ describe("using the publisher methods mixin",function(){
                     oldargs = ["what","ever"],
                     newarg = function(foo,bar){console.log(foo,bar);},
                     context = {
-                        eventLabel: "LABEL",
+                        eventType: "LABEL",
                         preEmit:sinon.stub().returns(newarg),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
-                pub.trigger.apply(context,oldargs);
+                pub.triggerSync.apply(context,oldargs);
 
                 it("should call shouldEmit with the function",function(){
                     assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
@@ -319,7 +323,7 @@ describe("using the publisher methods mixin",function(){
                     shouldEmit:sinon.stub().returns(false),
                     emitter: emitter
                 };
-            pub.trigger.call(context,"FOO","BAR");
+            pub.triggerSync.call(context,"FOO","BAR");
 
             it("should not emit anything",function(){
                 assert.equal(emitter.emit.callCount,0);
@@ -337,6 +341,7 @@ describe("using the publisher methods mixin",function(){
 
             contexts.forEach(function(context){
                 try{
+                    pub.children = context.children;
                     pub.triggerPromise.call(context);
                     assert(false);
                 }catch(e){
@@ -348,10 +353,11 @@ describe("using the publisher methods mixin",function(){
         it("should return a promise",function(){
             var context = {
                 children:['completed','failed'],
-                completed:sinon.spy(),
-                failed:sinon.spy()
+                completed: { trigger: sinon.spy() },
+                failed: { trigger: sinon.spy() }
             };
 
+            pub.children = context.children;
             var promise = pub.triggerPromise.call(context);
 
             assert(promise instanceof Promise);
