@@ -1,6 +1,5 @@
 
 var Action = require('./Action');
-var AsyncAction = require('./AsyncAction');
 
 var keep = require('./keep');
 
@@ -16,13 +15,7 @@ var keep = require('./keep');
 var createAction = function (definition) {
     definition = definition || {};
 
-    var action;
-    if (definition.asyncResult) {
-        action = new AsyncAction(definition);
-    } else {
-        action = new Action(definition);
-    }
-
+    var action = new Action(definition);
     keep.createdActions.push(action);
 
     return action;

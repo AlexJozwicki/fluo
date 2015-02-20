@@ -18,7 +18,12 @@ var Action = function (definition) {
     this._isAction = true;
     this.actionType = 'action';
     this.eventType = 'event';
+    this.asyncResult = !!definition.asyncResult;
+
     this.children = definition.children || [];
+    if (this.asyncResult) {
+        this.children.push('completed', 'failed');
+    }
 
     delete definition.children;
     _.extend(this, definition);
