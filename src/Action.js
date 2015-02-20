@@ -29,7 +29,8 @@ var Action = function (definition) {
     _.extend(this, definition);
     this.createChildActions();
 
-    var functor = this.trigger.bind(this);
+    var trigger = definition.sync ? this.triggerSync : this.trigger;
+    var functor = trigger.bind(this);
     functor.__proto__ = this;
     return functor;
 };
