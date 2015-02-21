@@ -496,7 +496,7 @@ There is also `fluo.listenToMany()` which works in exactly the same way, exposin
 If all you want to do is update the state of your component to whatever the data store transmits, you can use `fluo.connect(listener, [stateKey])` as a mixin. If you supply a `stateKey` the state will be updated through `this.setState({ <stateKey>: data })`, otherwise `this.setState(data)`. Here's the example above changed to use this syntax:
 
 ```javascript
-var Status = React.createClass({
+var Status = react.createClass({
     mixins: [ fluo.connect(statusStore, 'currentStatus') ],
     render: function () {
         // render using `this.state.currentStatus`
@@ -513,7 +513,7 @@ it. For an individual post page, you could use `fluo.connectFilter()` to
 filter the posts to the post that's being viewed.
 
 ```javascript
-var PostView = React.createClass({
+var PostView = react.createClass({
     mixins: [ fluo.connectFilter(postStore, 'post', function (posts) {
         return posts.filter(function (post) {
            return (post.id === this.props.id);
