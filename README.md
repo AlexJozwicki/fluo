@@ -118,17 +118,17 @@ If `options.sync` is true, the functor will instead call `action.triggerSync()` 
 There is also a convenience function for creating multiple actions.
 
 ```javascript
-var Actions = fluo.createActions([
+var actions = fluo.createActions([
     'statusUpdate',
     'statusEdited',
     'statusAdded'
 ]);
 
-// Actions object now contains the actions
+// The actions object now contains the actions
 // with the names given in the array above
 // that may be invoked as usual
 
-Actions.statusUpdate();
+actions.statusUpdate();
 ```
 
 #### Asynchronous actions
@@ -137,12 +137,12 @@ For actions that represent asynchronous operations (e.g. API calls), a few separ
 
 ```javascript
 // this creates 'load', 'load.completed' and 'load.failed'
-var Actions = fluo.createActions({
+var actions = fluo.createActions({
     'load': { children: [ 'completed', 'failed'] }
 });
 
 // when 'load' is triggered, call async operation and trigger related actions
-Actions.load.listen(function () {
+actions.load.listen(function () {
     // By default, the listener is bound to the action
     // so we can access child actions using 'this'
     someAsyncOperation()
@@ -235,13 +235,13 @@ There are a couple of hooks available for each action.
 Example usage:
 
 ```javascript
-Actions.statusUpdate.preEmit = function () { console.log(arguments); };
-Actions.statusUpdate.shouldEmit = function (value) {
+actions.statusUpdate.preEmit = function () { console.log(arguments); };
+actions.statusUpdate.shouldEmit = function (value) {
     return (value > 0);
 };
 
-Actions.statusUpdate(0);
-Actions.statusUpdate(1);
+actions.statusUpdate(0);
+actions.statusUpdate(1);
 // Should output: 1
 ```
 
