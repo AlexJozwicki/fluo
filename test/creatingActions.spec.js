@@ -209,7 +209,7 @@ describe('Creating actions with children to an action definition object', functi
             });
 
             // listen for foo and return a promise
-            actions.foo.listenAndPromise(function() {
+            actions.foo.listen(function() {
                 var args = Array.prototype.slice.call(arguments, 0);
                 var deferred = Q.defer();
 

@@ -81,6 +81,22 @@ exports.isFunction = function(value) {
     return typeof value === 'function';
 };
 
+exports.isAction = function (action) {
+    return Boolean(
+        action &&
+        (typeof action === 'object' || typeof action === 'function') &&
+        typeof action.trigger === 'function'
+    );
+};
+
+exports.isPromise = function(value) {
+    return (
+        value &&
+        (typeof value === 'object' || typeof value === 'function') &&
+        typeof value.then === 'function'
+    );
+};
+
 exports.EventEmitter = require('eventemitter3');
 
 exports.nextTick = function(callback) {

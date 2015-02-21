@@ -47,7 +47,15 @@ Publisher.prototype.listen = function (callback, bindContext) {
     bindContext = bindContext || this;
 
     var eventHandler = function (args) {
-        callback.apply(bindContext, args);
+        var result = callback.apply(bindContext, args);
+        if (_.isPromise(result)) {
+            var canHandlePromise = Publisher.prototype.canHandlePromise.call(self);
+            if (!canHandlePromise) {
+                console.warn('Unhandled promise for ' + self.eventType);
+                return;
+            }
+            self.promise(result);
+        }
     };
     this.emitter.addListener(this.eventType, eventHandler);
 
@@ -63,16 +71,12 @@ Publisher.prototype.listen = function (callback, bindContext) {
  * @param {Object} The promise to attach to
  */
 Publisher.prototype.promise = function (promise) {
-    var self = this;
-
-    var canHandlePromise =
-        this.children.indexOf('completed') >= 0 &&
-        this.children.indexOf('failed') >= 0;
-
-    if (!canHandlePromise){
+    var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
+    if (!canHandlePromise) {
         throw new Error('Publisher must have "completed" and "failed" child publishers');
     }
 
+    var self = this;
     promise.then(function (response) {
         return self.completed.trigger(response);
     });
@@ -82,25 +86,9 @@ Publisher.prototype.promise = function (promise) {
     });
 };
 
-/**
- * Subscribes the given callback for action triggered, which should
- * return a promise that in turn is passed to `this.promise`
- *
- * @param {Function} callback The callback to register as event handler
- */
-Publisher.prototype.listenAndPromise = function (callback, bindContext) {
-    var self = this;
-    bindContext = bindContext || this;
 
-    return this.listen(function () {
-        if (!callback) {
-            throw new Error('Expected a function returning a promise but got ' + callback);
-        }
-
-        var args = arguments,
-            promise = callback.apply(bindContext, args);
-        return self.promise.call(self, promise);
-    }, bindContext);
+Publisher.prototype.canHandlePromise = function () {
+    return _.isAction(this.completed) && _.isAction(this.failed);
 };
 
 /**
@@ -134,17 +122,13 @@ Publisher.prototype.trigger = function () {
  * Returns a Promise for the triggered action
  */
 Publisher.prototype.triggerPromise = function () {
-    var self = this;
-    var args = arguments;
-
-    var canHandlePromise = (
-        this.children.indexOf('completed') !== -1 &&
-        this.children.indexOf('failed') !== -1
-    );
-
+    var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
     if (!canHandlePromise) {
         throw new Error('Publisher must have "completed" and "failed" child publishers');
     }
+
+    var self = this;
+    var args = arguments;
 
     var promise = _.createPromise(function (resolve, reject) {
         var removeSuccess = self.completed.listen(function (args) {
