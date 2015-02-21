@@ -166,9 +166,9 @@ createAction({
 
 There are a couple of helper methods available to trigger the `completed` and `failed` actions:
 
-* `promise()` - Expects a promise object and binds the triggers of the `completed` and `failed` child actions to that promise, using `then()` and `catch()`.
+* `#promise(promise)` - Expects a promise object and binds the triggers of the `completed` and `failed` child actions to that promise, using `then()` and `catch()`.
 
-* `listenAndPromise()` - Expects a function that returns a promise object, which is called when the action is triggered, after which `promise()` is called with the returned promise object. Essentially calls the function on trigger of the action, which then triggers the `completed` or `failed` child actions after the promise is fulfilled.
+* `#listen(callback)` - Expects a function which can return a promise object. If it does, `#promise()` is called with the returned promise object.
 
 Therefore, the following are all equivalent:
 
@@ -183,7 +183,7 @@ asyncResultAction.listen(function (arguments) {
     asyncResultAction.promise(someAsyncOperation(arguments));
 });
 
-asyncResultAction.listenAndPromise(someAsyncOperation);
+asyncResultAction.listen(someAsyncOperation);
 ```
 
 ##### Asynchronous actions as Promises
