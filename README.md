@@ -113,7 +113,7 @@ statusUpdate(data); // Invokes the action statusUpdate
 statusUpdate.trigger(data); // same effect as above
 ```
 
-If `options.sync` is true, the functor will instead call `action.triggerSync()` which is a synchronous operation. You can change `action.sync` during the lifetime of the action, and the following calls will honour that change.
+If `options.sync` is true, the functor will instead call `action.triggerSync()` which is a synchronous operation.
 
 There is also a convenience function for creating multiple actions.
 
