@@ -22,15 +22,37 @@ The pattern is composed of actions and data stores, where actions initiate new d
 
 ## Content
 
+- [Installation](#installation)
 - [Comparing Fluo with Facebook Flux](#comparing-fluo-with-facebook-flux)
 - [Examples](#examples)
-- [Installation](#installation)
 - [Usage](#usage)
      - [Actions](#creating-actions)
      - [Stores](#creating-data-stores)
      - [Component](#react-component-example)
 - [Advanced Usage](#advanced-usage)
 - [Colophon](#colophon)
+
+## Install/Download
+
+The latest release is always downloadable from GitHub: [jankuca/fluo/releases](https://github.com/jankuca/fluo/releases).
+
+### NPM
+
+The following command installs Fluo as an npm package:
+
+    npm install fluo
+
+### Bower
+
+The following command installs Fluo as a bower component that can be used in the browser:
+
+    bower install fluo
+
+### ES5
+
+Like React, Fluo depends on an ES5-shim for older browsers. [Kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
+
+[Back to top](#content)
 
 ## Comparing Fluo with Facebook Flux
 
@@ -67,28 +89,6 @@ You can find some example projects at these locations:
 * [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://spoike.github.io/refluxjs-todo/](http://spoike.github.io/refluxjs-todo/)
 * [Hacker News Clone](https://github.com/echenley/react-news) by echenley
 * [Another Todo Project with a Python backend](https://github.com/limelights/todo-reflux) by limelights
-
-[Back to top](#content)
-
-## Installation
-
-You can currently install the package as a npm package or bower.
-
-### NPM
-
-The following command installs Fluo as an npm package:
-
-    npm install fluo
-
-### Bower
-
-The following command installs Fluo as a bower component that can be used in the browser:
-
-    bower install fluo
-
-### ES5
-
-Like React, Fluo depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
 
 [Back to top](#content)
 
@@ -681,7 +681,7 @@ Remember the `listenToMany()` method? In case you use that with other stores, it
 
 ## Colophon
 
-[List of contributors](https://github.com/spoike/fluo/graphs/contributors) is available on Github.
+[List of contributors](https://github.com/jankuca/fluo/graphs/contributors) is available on Github.
 
 This project is licensed under [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause). Copyright (c) 2014, Mikael Brassman, Jan Kuča.
 
