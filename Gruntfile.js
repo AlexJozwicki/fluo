@@ -19,15 +19,15 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.js',
         options: {
           bundleOptions: {
-            standalone: 'Reflux'
+            standalone: 'fluo'
           }
         },
       }
     },
     uglify: {
       dist: {
-        src: 'dist/reflux.js',
-        dest: 'dist/reflux.min.js'
+        src: 'dist/fluo.js',
+        dest: 'dist/fluo.min.js'
       }
     },
     watch: {

@@ -2,14 +2,14 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     connectFilter = require('../src/connectFilter'),
     _ = require('../src/utils'),
-    Reflux = require('../src');
+    fluo = require('../src');
 
 var dummyFilter = function(value) { return value.slice(0,2); };
 
 describe('using the connectFilter(...) mixin',function(){
 
-    it("should be exposed in Reflux",function(){
-        assert.equal(connectFilter, Reflux.connectFilter);
+    it("should be exposed in fluo",function(){
+        assert.equal(connectFilter, fluo.connectFilter);
     });
 
     describe("when calling with action",function() {

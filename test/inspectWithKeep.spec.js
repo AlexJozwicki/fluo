@@ -1,21 +1,21 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src');
+    fluo = require('../src');
 
 describe('with the keep reset', function() {
     beforeEach(function () {
-        Reflux.__keep.reset();
+        fluo.__keep.reset();
     });
 
     describe('when an action is created', function() {
         var action;
 
         beforeEach(function () {
-            action = Reflux.createAction();
+            action = fluo.createAction();
         });
 
         it('should be in the keep', function() {
-            assert.equal(Reflux.__keep.createdActions[0], action);
+            assert.equal(fluo.__keep.createdActions[0], action);
         });
     });
 
@@ -23,11 +23,11 @@ describe('with the keep reset', function() {
         var store;
 
         beforeEach(function () {
-            store = Reflux.createStore({ init: function() { /* no-op */} });
+            store = fluo.createStore({ init: function() { /* no-op */} });
         });
 
         it('should be in the keep', function() {
-            assert.equal(Reflux.__keep.createdStores[0], store);
+            assert.equal(fluo.__keep.createdStores[0], store);
         });
     });
 });

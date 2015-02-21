@@ -2,12 +2,12 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     connect = require('../src/connect'),
     _ = require('../src/utils'),
-    Reflux = require('../src');
+    fluo = require('../src');
 
 describe('using the connect(...) mixin',function(){
 
-    it("should be exposed in Reflux",function(){
-        assert.equal(connect, Reflux.connect);
+    it("should be exposed in fluo",function(){
+        assert.equal(connect, fluo.connect);
     });
 
     describe("when calling with action",function() {

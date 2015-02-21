@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -13,10 +13,10 @@ describe('Managing subscriptions via ListenerMixin', function() {
 
     beforeEach(function() {
         // simulate ReactJS component instantiation and mounting
-        component = Object.create(Reflux.ListenerMixin);
+        component = Object.create(fluo.ListenerMixin);
         delete component.subscriptions;
 
-        action = Reflux.createAction();
+        action = fluo.createAction();
 
         promise = Q.Promise(function(resolve) {
             component.listenTo(action, function() {
@@ -39,7 +39,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
 
     describe('using a store and listening to it', function() {
         beforeEach(function () {
-            store = Reflux.createStore({
+            store = fluo.createStore({
                 init: function() {
                     this.listenTo(action, this.triggerSync);
                 }
@@ -49,7 +49,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         });
 
         it('should be possible to listen to the store using two different components', function() {
-            var component2 = Object.create(Reflux.ListenerMixin);
+            var component2 = Object.create(fluo.ListenerMixin);
             component2.listenTo(store, function() {});
         });
     });
@@ -70,7 +70,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         }
 
         it('should get initial state from getInitialState()', function () {
-            store = Reflux.createStore({
+            store = fluo.createStore({
                 getInitialState: function () {
                     return 'initial state';
                 }
@@ -80,7 +80,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         });
 
         it('should get initial state from getInitialState() returned promise', function () {
-            store = Reflux.createStore({
+            store = fluo.createStore({
                 getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {

@@ -1,5 +1,5 @@
-var Reflux = require('../../src'),
-    action = Reflux.createAction(),
+var fluo = require('../../src'),
+    action = fluo.createAction(),
     i,
     noop = function() {},
     NUMBER_OF_LISTENERS = 100;

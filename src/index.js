@@ -22,7 +22,7 @@ exports.listenToMany = require('./listenToMany');
 
 
 
-exports.joinTrailing = exports.all = staticJoinCreator("last"); // Reflux.all alias for backward compatibility
+exports.joinTrailing = exports.all = staticJoinCreator("last"); // fluo.all alias for backward compatibility
 exports.joinLeading = staticJoinCreator("first");
 exports.joinStrict = staticJoinCreator("strict");
 exports.joinConcat = staticJoinCreator("all");
@@ -46,7 +46,7 @@ exports.createActions = function(definitions) {
 };
 
 /**
- * Sets the eventmitter that Reflux uses
+ * Sets the eventmitter that Fluo uses
  */
 exports.setEventEmitter = function(ctx) {
     var _ = require('./utils');
@@ -55,7 +55,7 @@ exports.setEventEmitter = function(ctx) {
 
 
 /**
- * Sets the Promise library that Reflux uses
+ * Sets the Promise library that Fluo uses
  */
 exports.setPromise = function(ctx) {
     var _ = require('./utils');
@@ -92,6 +92,6 @@ if (!Function.prototype.bind) {
   console.error(
     'Function.prototype.bind not available. ' +
     'ES5 shim required. ' +
-    'https://github.com/spoike/refluxjs#es5'
+    'https://github.com/jankuca/fluo#es5'
   );
 }

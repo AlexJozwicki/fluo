@@ -2,7 +2,7 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     listenTo = require('../src/listenTo'),
     _ = require('../src/utils'),
-    Reflux = require('../src');
+    fluo = require('../src');
 
 describe('the listenTo shorthand',function(){
 
@@ -26,8 +26,8 @@ describe('the listenTo shorthand',function(){
             result.componentDidMount();
 
             it("should add all methods from ListenerMethods",function(){
-                for(var m in Reflux.ListenerMethods){
-                    assert.equal(result[m],Reflux.ListenerMethods[m]);
+                for(var m in fluo.ListenerMethods){
+                    assert.equal(result[m],fluo.ListenerMethods[m]);
                 }
             });
 

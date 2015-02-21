@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     sinon = require('sinon');
 
 describe("using the ListenerMixin",function(){
@@ -20,7 +20,7 @@ describe("using the ListenerMixin",function(){
                 onParentBazDefault: "onParentBazDefault",
                 listenTo:sinon.spy()
             };
-        Reflux.ListenerMixin.listenToMany.call(context,listenables);
+        fluo.ListenerMixin.listenToMany.call(context,listenables);
 
         it("should call listenTo for all listenables with corresponding callbacks",function(){
             assert.equal(context.listenTo.callCount,7);
@@ -35,7 +35,7 @@ describe("using the ListenerMixin",function(){
     });
 
     describe("the listenTo function",function(){
-        var listenTo = Reflux.ListenerMixin.listenTo;
+        var listenTo = fluo.ListenerMixin.listenTo;
 
         it("will throw error if validation of listenable returns text",function(){
             var errormsg = "ERROR! ERROR!",
@@ -99,7 +99,7 @@ describe("using the ListenerMixin",function(){
                 context = {
                     defcb: sinon.spy()
                 };
-            Reflux.ListenerMixin.fetchInitialState.call(context,listenable,"defcb");
+            fluo.ListenerMixin.fetchInitialState.call(context,listenable,"defcb");
 
             it("calls getInitialState on the publisher",function(){
                 assert.equal(listenable.getInitialState.callCount,1);
@@ -112,11 +112,11 @@ describe("using the ListenerMixin",function(){
     });
 
     describe('the hasListener method',function(){
-        var action1 = Reflux.createAction(),
-            action2 = Reflux.createAction(),
-            action3 = Reflux.createAction(),
-            action4 = Reflux.createAction(),
-            store = Reflux.createStore();
+        var action1 = fluo.createAction(),
+            action2 = fluo.createAction(),
+            action3 = fluo.createAction(),
+            action4 = fluo.createAction(),
+            store = fluo.createStore();
         store.listenTo(action1,function(){});
         store.joinLeading(action1,action2,action3,function(){});
         it('should return true if context is listening',function(){

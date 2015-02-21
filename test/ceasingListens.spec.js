@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
-    Reflux = require('../src'),
-    Action = Reflux.createAction,
-    Store = Reflux.createStore,
+    fluo = require('../src'),
+    Action = fluo.createAction,
+    Store = fluo.createStore,
     fn = function(){},
     sinon = require('sinon');
 

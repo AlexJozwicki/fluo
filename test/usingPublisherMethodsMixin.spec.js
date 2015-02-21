@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     Q = require('q'),
     sinon = require('sinon'),
     util = require('util');
@@ -8,7 +8,7 @@ var chai = require('chai'),
 chai.use(require('chai-as-promised'));
 
 describe("using the PublisherMixin",function(){
-    var pub = Reflux.PublisherMixin;
+    var pub = fluo.PublisherMixin;
 
     describe("the promise method",function(){
 
@@ -364,9 +364,9 @@ describe("using the PublisherMixin",function(){
         });
 
         it("should resolve when completed",function(){
-            var action = Reflux.createAction({ asyncResult: true });
+            var action = fluo.createAction({ asyncResult: true });
 
-            Reflux.createStore({
+            fluo.createStore({
                 init: function() {
                     this.listenTo(action, this.onAction);
                 },
@@ -383,9 +383,9 @@ describe("using the PublisherMixin",function(){
         });
 
         it("should reject when failed",function(){
-            var action = Reflux.createAction({ asyncResult: true });
+            var action = fluo.createAction({ asyncResult: true });
 
-            Reflux.createStore({
+            fluo.createStore({
                 init: function() {
                     this.listenTo(action, this.onAction);
                 },

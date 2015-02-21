@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     _ = require('../src/utils'),
     Q = require('q');
 
@@ -13,10 +13,10 @@ describe('Composed listenables', function() {
         all;
 
     beforeEach(function() {
-        action1 = Reflux.createAction();
-        action2 = Reflux.createAction();
-        action3 = Reflux.createAction();
-        all = Reflux.all(action1, action2, action3);
+        action1 = fluo.createAction();
+        action2 = fluo.createAction();
+        action3 = fluo.createAction();
+        all = fluo.all(action1, action2, action3);
     });
 
 
@@ -123,18 +123,18 @@ describe('Composed listenable with stores', function() {
         all;
 
     beforeEach(function () {
-        action = Reflux.createAction();
-        store1 = Reflux.createStore({
+        action = fluo.createAction();
+        store1 = fluo.createStore({
             init: function() {
                 this.listenTo(action, this.triggerSync);
             }
         });
-        store2 = Reflux.createStore({
+        store2 = fluo.createStore({
             init: function() {
                 this.listenTo(action, this.triggerSync);
             }
         });
-        all = Reflux.all(store1, store2);
+        all = fluo.all(store1, store2);
     });
 
     it('should emit when action is invoked', function() {
@@ -154,7 +154,7 @@ describe('Composed listenable with stores', function() {
         var storeAll;
 
         beforeEach(function () {
-            storeAll = Reflux.createStore({
+            storeAll = fluo.createStore({
                 init: function() {
                     this.listenTo(all, this.triggerSync);
                 }
@@ -185,12 +185,12 @@ describe('Composed listenable with stores', function() {
                 anotherAction;
 
             beforeEach(function () {
-                anotherAction = Reflux.createAction();
+                anotherAction = fluo.createAction();
                 Component = function() {
                     this.listenTo(storeAll, this.triggerSync);
                     this.listenTo(anotherAction);
                 };
-                _.extend(Component.prototype, Reflux.ListenerMixin);
+                _.extend(Component.prototype, fluo.ListenerMixin);
             });
 
             it('should not crash', function() {

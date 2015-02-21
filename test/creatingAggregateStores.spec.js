@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -17,14 +17,14 @@ describe('Creating aggregate stores', function() {
 
         beforeEach(function() {
             promise = Q.Promise(function(resolve) {
-                action = Reflux.createAction();
-                store = Reflux.createStore({
+                action = fluo.createAction();
+                store = fluo.createStore({
                     init: function() {
                         this.listenTo(action, this.triggerSync);
                         // pass to the triggerSync function immediately
                     }
                 });
-                aggregateStore = Reflux.createStore({
+                aggregateStore = fluo.createStore({
                     init: function() {
                         this.listenTo(store, this.storeCalled);
                     },
@@ -57,7 +57,7 @@ describe('Creating aggregate stores', function() {
             var thirdStore;
 
             beforeEach(function() {
-                thirdStore = Reflux.createStore({});
+                thirdStore = fluo.createStore({});
                 thirdStore.listenTo(aggregateStore, function() {});
             });
 

@@ -1,4 +1,4 @@
-var Reflux = require('../../src'),
+var fluo = require('../../src'),
     actions = [],
     joinedActions,
     i,
@@ -7,10 +7,10 @@ var Reflux = require('../../src'),
     NUMBER_OF_JOINED_ACTIONS = 10;
 
 for (i = 0; i < NUMBER_OF_JOINED_ACTIONS; i++) {
-    actions = Reflux.createAction();
+    actions = fluo.createAction();
 }
 
-joinedActions = Reflux.all(actions);
+joinedActions = fluo.all(actions);
 
 for (i = 0; i < NUMBER_OF_LISTENERS; i++) {
     joinedActions.listen(noop);

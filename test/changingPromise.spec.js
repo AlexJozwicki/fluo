@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     utils = require('../src/utils');
 
 var MockPromise = function(resolver) {
@@ -35,11 +35,11 @@ describe('Switching Promise constructor', function() {
     beforeEach(function() {
         original = utils.Promise;
 
-        Reflux.setPromise(MockPromise);
+        fluo.setPromise(MockPromise);
     });
 
     afterEach(function() {
-        Reflux.setPromise(original);
+        fluo.setPromise(original);
     });
 
     it('should not be the original', function() {
@@ -60,11 +60,11 @@ describe('Switching Promise factory', function() {
     beforeEach(function() {
         original = utils.createPromise;
 
-        Reflux.setPromiseFactory(MockFactory);
+        fluo.setPromiseFactory(MockFactory);
     });
 
     afterEach(function() {
-        Reflux.setPromiseFactory(original);
+        fluo.setPromiseFactory(original);
     });
 
     it('should not be the original', function() {

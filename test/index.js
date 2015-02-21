@@ -1,11 +1,11 @@
-var Reflux = require('../src');
+var fluo = require('../src');
 
 // Creating an Action
-var textUpdate = Reflux.createAction();
-var statusUpdate = Reflux.createAction();
+var textUpdate = fluo.createAction();
+var statusUpdate = fluo.createAction();
 
 // Creating a Data Store - Listening to textUpdate action
-var textStore = Reflux.createStore({
+var textStore = fluo.createStore({
     init: function() {
         this.listenTo(textUpdate, this.output);
     },
@@ -21,7 +21,7 @@ var textStore = Reflux.createStore({
 });
 
 // Creating a DataStore
-var statusStore = Reflux.createStore({
+var statusStore = fluo.createStore({
     init: function() {
         this.listenTo(statusUpdate, this.output);
     },
@@ -32,7 +32,7 @@ var statusStore = Reflux.createStore({
 });
 
 // Creating an aggregate DataStore that is listening to textStore and statusStore
-var storyStore = Reflux.createStore({
+var storyStore = fluo.createStore({
     init: function() {
         this.listenTo(statusStore, this.statusChanged);
         this.listenTo(textStore, this.textUpdated);

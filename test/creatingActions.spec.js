@@ -1,6 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
+    fluo = require('../src'),
     Q = require('q'),
     sinon = require('sinon');
 
@@ -9,9 +9,9 @@ chai.use(require('chai-as-promised'));
 describe('Creating action', function() {
 
     it("should implement the publisher API",function(){
-        var action = Reflux.createAction();
-        for(var apimethod in Reflux.PublisherMethods){
-            assert.equal(Reflux.PublisherMethods[apimethod],action[apimethod]);
+        var action = fluo.createAction();
+        for(var apimethod in fluo.PublisherMethods){
+            assert.equal(fluo.PublisherMethods[apimethod],action[apimethod]);
         }
     });
 
@@ -21,7 +21,7 @@ describe('Creating action', function() {
             shouldEmit: function () { return "SHO"; },
             random: function () { return "RAN"; }
         };
-        var action = Reflux.createAction(def);
+        var action = fluo.createAction(def);
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
         assert.equal(action.random, def.random);
@@ -29,7 +29,7 @@ describe('Creating action', function() {
 
     it("should create specified child actions",function(){
         var def = {children: ["foo","BAR"]},
-            action = Reflux.createAction(def);
+            action = fluo.createAction(def);
 
         assert.deepEqual(action.children, ["foo", "BAR"]);
         assert.equal(action.foo._isAction, true);
@@ -40,7 +40,7 @@ describe('Creating action', function() {
 
     it("should create completed and failed child actions for async actions",function(){
         var def = {asyncResult: true},
-            action = Reflux.createAction(def);
+            action = fluo.createAction(def);
 
         assert.equal(action.asyncResult, true);
         assert.deepEqual(action.children, ["completed", "failed"]);
@@ -52,7 +52,7 @@ describe('Creating action', function() {
         testArgs;
 
     beforeEach(function () {
-        action = Reflux.createAction();
+        action = fluo.createAction();
         testArgs = [1337, 'test'];
     });
 
@@ -61,11 +61,11 @@ describe('Creating action', function() {
     });
 
     describe("the synchronisity",function(){
-        var syncaction = Reflux.createAction({sync: true}),
-            asyncaction = Reflux.createAction(),
+        var syncaction = fluo.createAction({sync: true}),
+            asyncaction = fluo.createAction(),
             synccalled = false,
             asynccalled = false,
-            store = Reflux.createStore({
+            store = fluo.createStore({
                 sync: function(){synccalled=true;},
                 async: function(){asynccalled=true;}
             });
@@ -103,7 +103,7 @@ describe('Creating action', function() {
 
         describe('when adding preEmit hook', function() {
             var preEmit = sinon.spy(),
-                action = Reflux.createAction({preEmit:preEmit});
+                action = fluo.createAction({preEmit:preEmit});
 
             action(1337,'test');
 
@@ -115,10 +115,10 @@ describe('Creating action', function() {
         describe('when adding shouldEmit hook',function(){
             describe("when hook returns true",function(){
                 var shouldEmit = sinon.stub().returns(true),
-                    action = Reflux.createAction({shouldEmit:shouldEmit}),
+                    action = fluo.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
 
-                var listener = new Reflux.Listener();
+                var listener = new fluo.Listener();
                 listener.listenTo(action,callback);
 
                 action(1337,'test');
@@ -136,10 +136,10 @@ describe('Creating action', function() {
 
             describe("when hook returns false",function(){
                 var shouldEmit = sinon.stub().returns(false),
-                    action = Reflux.createAction({shouldEmit:shouldEmit}),
+                    action = fluo.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
 
-                var listener = new Reflux.Listener();
+                var listener = new fluo.Listener();
                 listener.listenTo(action,callback);
 
                 action(1337,'test');
@@ -162,7 +162,7 @@ describe('Creating actions with children to an action definition object', functi
 
     beforeEach(function () {
         actionNames = {'foo': {asyncResult: true}, 'bar': {children: ['baz']}};
-        actions = Reflux.createActions(actionNames);
+        actions = fluo.createActions(actionNames);
     });
 
     it('should contain foo and bar properties', function() {
@@ -171,11 +171,11 @@ describe('Creating actions with children to an action definition object', functi
     });
 
     it('should contain action functor on foo and bar properties with children', function() {
-        assert.instanceOf(actions.foo, Reflux.Action);
-        assert.instanceOf(actions.foo.completed, Reflux.Action);
-        assert.instanceOf(actions.foo.failed, Reflux.Action);
-        assert.instanceOf(actions.bar, Reflux.Action);
-        assert.instanceOf(actions.bar.baz, Reflux.Action);
+        assert.instanceOf(actions.foo, fluo.Action);
+        assert.instanceOf(actions.foo.completed, fluo.Action);
+        assert.instanceOf(actions.foo.failed, fluo.Action);
+        assert.instanceOf(actions.bar, fluo.Action);
+        assert.instanceOf(actions.bar.baz, fluo.Action);
     });
 
     describe('when listening to the child action created this way', function() {
@@ -236,7 +236,7 @@ describe('Creating multiple actions to an action definition object', function() 
 
     beforeEach(function () {
         actionNames = ['foo', 'bar'];
-        actions = Reflux.createActions(actionNames);
+        actions = fluo.createActions(actionNames);
     });
 
     it('should contain foo and bar properties', function() {
@@ -245,8 +245,8 @@ describe('Creating multiple actions to an action definition object', function() 
     });
 
     it('should contain action functor on foo and bar properties', function() {
-        assert.instanceOf(actions.foo, Reflux.Action);
-        assert.instanceOf(actions.bar, Reflux.Action);
+        assert.instanceOf(actions.foo, fluo.Action);
+        assert.instanceOf(actions.bar, fluo.Action);
     });
 
     describe('when listening to any of the actions created this way', function() {
