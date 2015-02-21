@@ -11,7 +11,6 @@ var Listener = require('./Listener');
 var Store = function (methods) {
     Listener.call(this);
 
-    this.emitter = new _.EventEmitter();
     this.eventType = 'change';
 
     if (methods) {
