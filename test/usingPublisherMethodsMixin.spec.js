@@ -10,7 +10,33 @@ chai.use(require('chai-as-promised'));
 describe("using the PublisherMixin",function(){
     var pub = fluo.PublisherMixin;
 
-    describe("the promise method",function(){
+    describe("the #resolve() method", function () {
+
+        describe("when used with a result",function(){
+            var context = {
+                children:['completed','failed'],
+                completed: { trigger: sinon.spy() },
+                failed: { trigger: sinon.spy() }
+            };
+
+            pub.children = context.children;
+            var value = 'foo';
+            var result = pub.resolve.call(context, value);
+
+            it("should not return a value",function(){
+                assert.equal(result, undefined);
+            });
+
+            it("should call the completed child trigger",function(){
+                var args = context.completed.trigger.firstCall.args;
+                assert.deepEqual(args, ["foo"]);
+            });
+
+            it("should not call the failed child trigger",function(){
+                assert.equal(context.failed.trigger.callCount, 0);
+            });
+        });
+
 
         describe("when the promise completes",function(){
             var deferred = Q.defer();
@@ -22,7 +48,7 @@ describe("using the PublisherMixin",function(){
             };
 
             pub.children = context.children;
-            var result = pub.promise.call(context,promise);
+            var result = pub.resolve.call(context, promise);
 
             deferred.resolve('foo');
 
@@ -50,7 +76,7 @@ describe("using the PublisherMixin",function(){
             };
 
             pub.children = context.children;
-            var result = pub.promise.call(context,promise);
+            var result = pub.resolve.call(context, promise);
 
             deferred.reject('bar');
 
@@ -64,6 +90,34 @@ describe("using the PublisherMixin",function(){
             });
 
             it("should not the completed child trigger",function(){
+                assert.equal(context.completed.trigger.callCount, 0);
+            });
+        });
+    });
+
+    describe("the #reject() method", function () {
+
+        describe("when used with a result",function(){
+            var context = {
+                children:['completed','failed'],
+                completed: { trigger: sinon.spy() },
+                failed: { trigger: sinon.spy() }
+            };
+
+            pub.children = context.children;
+            var value = 'foo';
+            var result = pub.reject.call(context, value);
+
+            it("should not return a value",function(){
+                assert.equal(result, undefined);
+            });
+
+            it("should call the failed child trigger",function(){
+                var args = context.failed.trigger.firstCall.args;
+                assert.deepEqual(args, ["foo"]);
+            });
+
+            it("should not call the completed child trigger",function(){
                 assert.equal(context.completed.trigger.callCount, 0);
             });
         });

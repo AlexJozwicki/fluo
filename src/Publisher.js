@@ -54,7 +54,7 @@ Publisher.prototype.listen = function (callback, bindContext) {
                 console.warn('Unhandled promise for ' + self.eventType);
                 return;
             }
-            self.promise(result);
+            self.resolve(result);
         }
     };
     this.emitter.addListener(this.eventType, eventHandler);
@@ -68,9 +68,14 @@ Publisher.prototype.listen = function (callback, bindContext) {
  * Attach handlers to promise that trigger the completed and failed
  * child publishers, if available.
  *
- * @param {Object} The promise to attach to
+ * @param {Object} promise The result to use or a promise to which to listen.
  */
-Publisher.prototype.promise = function (promise) {
+Publisher.prototype.resolve = function (promise) {
+    if (!_.isPromise(promise)) {
+        this.completed.trigger(promise);
+        return;
+    }
+
     var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
     if (!canHandlePromise) {
         throw new Error('Publisher must have "completed" and "failed" child publishers');
@@ -84,6 +89,16 @@ Publisher.prototype.promise = function (promise) {
     promise["catch"](function (error) {
         return self.failed.trigger(error);
     });
+};
+
+
+Publisher.prototype.reject = function (result) {
+    if (_.isPromise(result)) {
+        console.warn('Use #resolve() for promises.');
+        return;
+    }
+
+    this.failed.trigger(result);
 };
 
 
