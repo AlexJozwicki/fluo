@@ -64,6 +64,18 @@ Publisher.prototype.listen = function (callback, bindContext) {
     };
 };
 
+
+Publisher.prototype.listenOnce = function (callback, bindContext) {
+    bindContext = bindContext || this;
+    var unsubscribe = this.listen(function () {
+        var args = Array.prototype.slice.call(arguments);
+        unsubscribe();
+        return callback.apply(bindContext, args);
+    });
+    return unsubscribe;
+};
+
+
 /**
  * Attach handlers to promise that trigger the completed and failed
  * child publishers, if available.
