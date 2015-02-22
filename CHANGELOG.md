@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.3
+
+* Added extended promise and async operation support to actions via `Publisher#resolve()`, `Publisher#reject()`, `Publisher#then()`.
+* Added `Publisher#listenOnce()`.
+
 ## v1.0.2
 
 * Merged `Publisher#listenAndPromise()` with `Publisher#listen()` based on the return value of the registered callback.

@@ -1,6 +1,6 @@
 {
   "name": "fluo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A prototype-based fork of the Reflux data flow library similar to Facebook Flux",
   "main": "index.js",
   "scripts": {
