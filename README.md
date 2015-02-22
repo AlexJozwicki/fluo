@@ -84,7 +84,9 @@ Fluo has refactored Flux to be a bit more dynamic and be more Functional Reactiv
 
 ## Examples
 
-You can find some example projects at these locations:
+**Here is an example application built upon Fluo: [jankuca/fluo-example](http://github.com/jankuca/fluo-example)**
+
+You can find some more example projects at the following locations. These are built upon Reflux though.
 
 * [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://spoike.github.io/refluxjs-todo/](http://spoike.github.io/refluxjs-todo/)
 * [Hacker News Clone](https://github.com/echenley/react-news) by echenley
