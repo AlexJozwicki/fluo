@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    createAction = require('../src/createAction'),
     listenToMany = require('../src/listenToMany'),
     _ = require('../src/utils');
 
@@ -40,6 +41,54 @@ describe('the listenToMany shorthand',function(){
                 assert.equal(listenable2.listen.callCount,1);
                 assert.deepEqual(listenable2.listen.firstCall.args,[context.onSecondAction,result]);
             });
+        });
+    });
+
+    describe('callbacks returning promises', function () {
+        var firstAction = createAction({ asyncResult: true });
+        var secondAction = createAction({ asyncResult: true });
+        var listenables = {
+            firstAction: firstAction,
+            secondAction: secondAction
+        };
+
+        firstAction.completed.trigger = sinon.spy();
+        secondAction.failed.trigger = sinon.spy();
+
+        it('should resolve action with promises returned by their callback',
+                function () {
+            var resolveFirstPromise;
+            var rejectSecondPrimise;
+            var firstPromise = _.createPromise(function (resolve) {
+                resolveFirstPromise = resolve;
+            });
+            var secondPromise = _.createPromise(function (_, reject) {
+                rejectSecondPrimise = reject;
+            });
+            firstPromise.key = 'FIRST';
+            secondPromise.key = 'SECOND';
+            var context = {
+                onFirstAction: function () { return firstPromise; },
+                onSecondAction: function () { return secondPromise; }
+            };
+
+            var obj = _.extend(context, listenToMany(listenables));
+            obj.componentDidMount();
+
+            var testResultPromise1 = _.createPromise(function (resolve) {
+                firstAction.completed.listen(resolve);
+            });
+            var testResultPromise2 = _.createPromise(function (resolve) {
+                secondAction.failed.listen(resolve);
+            });
+
+            firstAction.triggerSync();
+            secondAction.triggerSync();
+            resolveFirstPromise('RESULT1');
+            rejectSecondPrimise('RESULT2');
+
+            assert.eventually.equal(testResultPromise1, 'RESULT1');
+            assert.eventually.equal(testResultPromise2, 'RESULT2');
         });
     });
 });

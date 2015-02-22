@@ -34,7 +34,7 @@ exports.linkMethodsOf = function (target, instance) {
 
     for (var name in target) {
         var method = target[name];
-        if (typeof method !== 'function' || plain[name]) {
+        if (typeof method !== 'function' || typeof plain[name] !== 'undefined') {
             continue;
         }
 
