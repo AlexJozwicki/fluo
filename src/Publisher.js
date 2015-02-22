@@ -83,14 +83,14 @@ Publisher.prototype.listenOnce = function (callback, bindContext) {
  * @param {Object} promise The result to use or a promise to which to listen.
  */
 Publisher.prototype.resolve = function (promise) {
+    var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
+    if (!canHandlePromise) {
+        throw new Error('Not an async publisher');
+    }
+
     if (!_.isPromise(promise)) {
         this.completed.trigger(promise);
         return;
-    }
-
-    var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
-    if (!canHandlePromise) {
-        throw new Error('Publisher must have "completed" and "failed" child publishers');
     }
 
     var self = this;
@@ -111,6 +111,26 @@ Publisher.prototype.reject = function (result) {
     }
 
     this.failed.trigger(result);
+};
+
+
+Publisher.prototype.then = function (onSuccess, onFailure) {
+    var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
+    if (!canHandlePromise) {
+        throw new Error('Not an async publisher');
+    }
+
+    if (onSuccess) {
+        this.completed.listenOnce(onSuccess);
+    }
+    if (onFailure) {
+        this.failed.listenOnce(onFailure);
+    }
+};
+
+
+Publisher.prototype['catch'] = function (onFailure) {
+    this.then(null, onFailure);
 };
 
 
