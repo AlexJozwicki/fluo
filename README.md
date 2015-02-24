@@ -2,6 +2,10 @@
 
 A prototype-based fork of the Reflux data flow library similar to [Facebook Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
+**To see what is different in this fork from Reflux, see the [release notes and changelog of 1.0.x](https://github.com/jankuca/fluo/releases/tag/v1.0.2)**
+
+---
+
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][npm-url]
 [![Bower Version][bower-image]][bower-url]
