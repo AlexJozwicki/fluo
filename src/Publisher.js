@@ -96,9 +96,7 @@ Publisher.prototype.resolve = function (promise) {
     var self = this;
     promise.then(function (response) {
         return self.completed.trigger(response);
-    });
-    // IE compatibility - catch is a reserved word - without bracket notation source compilation will fail under IE
-    promise["catch"](function (error) {
+    }, function (error) {
         return self.failed.trigger(error);
     });
 };
