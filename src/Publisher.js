@@ -12,6 +12,8 @@ var Publisher = function () {
 
     this.children = [];
     this.eventType = 'event';
+
+    this.dispatchPromises_ = [];
 };
 
 
@@ -49,12 +51,18 @@ Publisher.prototype.listen = function (callback, bindContext) {
     var eventHandler = function (args) {
         var result = callback.apply(bindContext, args);
         if (_.isPromise(result)) {
+            // Note: To support mixins, we need to access the method this way.
+            //   Overrides are not possible.
             var canHandlePromise = Publisher.prototype.canHandlePromise.call(self);
             if (!canHandlePromise) {
                 console.warn('Unhandled promise for ' + self.eventType);
                 return;
             }
-            self.resolve(result);
+
+            self.dispatchPromises_.push({
+                promise: result,
+                listener: callback
+            });
         }
     };
     this.emitter.addListener(this.eventType, eventHandler);
@@ -83,6 +91,8 @@ Publisher.prototype.listenOnce = function (callback, bindContext) {
  * @param {Object} promise The result to use or a promise to which to listen.
  */
 Publisher.prototype.resolve = function (promise) {
+    // Note: To support mixins, we need to access the method this way.
+    //   Overrides are not possible.
     var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
     if (!canHandlePromise) {
         throw new Error('Not an async publisher');
@@ -113,6 +123,8 @@ Publisher.prototype.reject = function (result) {
 
 
 Publisher.prototype.then = function (onSuccess, onFailure) {
+    // Note: To support mixins, we need to access the method this way.
+    //   Overrides are not possible.
     var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
     if (!canHandlePromise) {
         throw new Error('Not an async publisher');
@@ -133,7 +145,7 @@ Publisher.prototype['catch'] = function (onFailure) {
 
 
 Publisher.prototype.canHandlePromise = function () {
-    return _.isAction(this.completed) && _.isAction(this.failed);
+    return _.isPublisher(this.completed) && _.isPublisher(this.failed);
 };
 
 /**
@@ -147,7 +159,11 @@ Publisher.prototype.triggerSync = function () {
     }
 
     if (this.shouldEmit.apply(this, args)) {
+        this.dispatchPromises_ = [];
         this.emitter.emit(this.eventType, args);
+        // Note: To support mixins, we need to access the method this way.
+        //   Overrides are not possible.
+        Publisher.prototype.handleDispatchPromises_.call(this);
     }
 };
 
@@ -167,6 +183,8 @@ Publisher.prototype.trigger = function () {
  * Returns a Promise for the triggered action
  */
 Publisher.prototype.triggerPromise = function () {
+    // Note: To support mixins, we need to access the method this way.
+    //   Overrides are not possible.
     var canHandlePromise = Publisher.prototype.canHandlePromise.call(this);
     if (!canHandlePromise) {
         throw new Error('Publisher must have "completed" and "failed" child publishers');
@@ -192,6 +210,31 @@ Publisher.prototype.triggerPromise = function () {
     });
 
     return promise;
+};
+
+
+Publisher.prototype.handleDispatchPromises_ = function () {
+    var promises = this.dispatchPromises_;
+    this.dispatchPromises_ = [];
+
+    if (promises.length === 0) {
+        return;
+    }
+    if (promises.length === 1) {
+        return this.resolve(promises[0].promise);
+    }
+
+    var mappedPromises = promises.map(function (item) {
+        return item.promise.then(function (result) {
+            return {
+                listener: item.listener,
+                value: result
+            };
+        });
+    });
+
+    var joinedPromise = _.Promise.all(mappedPromises);
+    return this.resolve(joinedPromise);
 };
 
 

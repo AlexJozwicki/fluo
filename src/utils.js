@@ -82,10 +82,14 @@ exports.isFunction = function(value) {
 };
 
 exports.isAction = function (action) {
+    return exports.isPublisher(action) && action._isAction;
+};
+
+exports.isPublisher = function (pub) {
     return Boolean(
-        action &&
-        (typeof action === 'object' || typeof action === 'function') &&
-        typeof action.trigger === 'function'
+        pub &&
+        (typeof pub === 'object' || typeof pub === 'function') &&
+        typeof pub.trigger === 'function'
     );
 };
 
