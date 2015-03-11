@@ -41,10 +41,12 @@ exports.Promise = _.Promise;
 exports.createActions = function(definitions) {
     var actions = {};
     for (var k in definitions) {
-        var val = definitions[k];
-        var actionType = _.isObject(val) ? k : val;
+        if (definitions.hasOwnProperty(k)) {
+            var val = definitions[k];
+            var actionType = _.isObject(val) ? k : val;
 
-        actions[actionType] = exports.createAction(val);
+            actions[actionType] = exports.createAction(val);
+        }
     }
     return actions;
 };
