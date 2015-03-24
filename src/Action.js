@@ -26,8 +26,15 @@ class Action extends Publisher {
             this.children.push('completed', 'failed');
         }
 
-        delete definition.children;
-        _.extend(this, definition);
+        //delete definition.children;
+        //_.extend(this, definition);
+        if( definition.preEmit ) {
+            this.preEmit = definition.preEmit;
+        }
+        if( definition.shouldEmit ) {
+            this.shouldEmit = definition.shouldEmit;
+        }
+
         this.createChildActions();
 
         var trigger = definition.sync ? this.triggerSync : this.trigger;
