@@ -3,9 +3,6 @@ var keep = require('./keep');
 
 
 /**
- * @constructor
- * @extends {Listener}
- * @param {Object=} methods Data store object methods
  */
 class Store extends Listener {
     constructor(listenables) {

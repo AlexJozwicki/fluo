@@ -158,11 +158,13 @@ describe('Creating action', function() {
 });
 
 describe('Creating actions with children to an action definition object', function() {
-    var actionNames, actions;
+    var actions;
 
     beforeEach(function () {
-        actionNames = {'foo': {asyncResult: true}, 'bar': {children: ['baz']}};
-        actions = fluo.createActions(actionNames);
+        actions = {
+            foo: new fluo.Action({asyncResult: true}),
+            bar: new fluo.Action({children: ['baz']})
+        };
     });
 
     it('should contain foo and bar properties', function() {
@@ -232,11 +234,13 @@ describe('Creating actions with children to an action definition object', functi
 
 describe('Creating multiple actions to an action definition object', function() {
 
-    var actionNames, actions;
+    var actions;
 
     beforeEach(function () {
-        actionNames = ['foo', 'bar'];
-        actions = fluo.createActions(actionNames);
+        actions = {
+            foo: new fluo.Action(),
+            bar: new fluo.Action()
+        };
     });
 
     it('should contain foo and bar properties', function() {
