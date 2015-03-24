@@ -15,16 +15,17 @@ describe('Creating action', function() {
         }
     });
 
+    // TODO: should it copy everything..?
     it("should copy properties from the definition into the action",function(){
         var def = {
             preEmit: function () { return "PRE"; },
             shouldEmit: function () { return "SHO"; },
-            random: function () { return "RAN"; }
+            //random: function () { return "RAN"; }
         };
         var action = new fluo.Action(def);
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
-        assert.equal(action.random, def.random);
+        //assert.equal(action.random, def.random);
     });
 
     it("should create specified child actions",function(){
