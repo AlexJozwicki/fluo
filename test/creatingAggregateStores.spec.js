@@ -1,7 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    fluo = require('../src'),
-    Q = require('q');
+    fluo = require('../src');
 
 chai.use(require('chai-as-promised'));
 
@@ -16,7 +15,7 @@ describe('Creating aggregate stores', function() {
             promise;
 
         beforeEach(function() {
-            promise = Q.Promise(function(resolve) {
+            promise = new Promise(function(resolve) {
                 action = new fluo.Action();
                 store = new class extends fluo.Store {
                     constructor() {

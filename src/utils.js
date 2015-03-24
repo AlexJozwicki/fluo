@@ -7,51 +7,9 @@ var isObject = exports.isObject = function(obj) {
     return type === 'function' || type === 'object' && !!obj;
 };
 
-exports.extend = function(obj) {
-    if (!isObject(obj)) {
-        return obj;
-    }
-    var source, prop;
-    for (var i = 1, length = arguments.length; i < length; i++) {
-        source = arguments[i];
-        for (prop in source) {
-            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
-                var desc_src = source;
-                while (desc_src) {
-                    // Getter invocation prevention.
-                    var desc = Object.getOwnPropertyDescriptor(desc_src, prop);
-                    if (desc) {
-                        Object.defineProperty(obj, prop, desc);
-                        break;
-                    }
-
-                    // Inherited (not "own") properties are ignored
-                    //   by Object.getOwnPropertyDescriptor()
-                    //   We need to climb up the prototype chain.
-                    desc_src = Object.getPrototypeOf(desc_src);
-                }
-            } else {
-                obj[prop] = source[prop];
-            }
-        }
-    }
-    return obj;
-};
 
 exports.isFunction = function(value) {
     return typeof value === 'function';
-};
-
-exports.isAction = function (action) {
-    return exports.isPublisher(action) && action._isAction;
-};
-
-exports.isPublisher = function (pub) {
-    return Boolean(
-        pub &&
-        (typeof pub === 'object' || typeof pub === 'function') &&
-        typeof pub.trigger === 'function'
-    );
 };
 
 exports.isPromise = function(value) {

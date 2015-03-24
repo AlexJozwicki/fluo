@@ -1,7 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
     fluo = require('../src'),
-    Q = require('q'),
     sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
@@ -17,7 +16,7 @@ describe('Creating stores', function() {
         beforeEach(function() {
             fluo.StoreMethods = {};
 
-            promise = Q.Promise(function(resolve) {
+            promise = new Promise(function(resolve) {
                 action = new fluo.Action();
                 class AnonStore extends fluo.Store {
                     constructor() {
@@ -102,7 +101,7 @@ describe('Creating stores', function() {
             var unsubStoreCallback, storeListenPromise;
 
             beforeEach(function() {
-                storeListenPromise = Q.promise(function(resolve) {
+                storeListenPromise = new Promise(function(resolve) {
                     unsubStoreCallback = store.listen(function() {
                         resolve(Array.prototype.slice.call(arguments, 0));
                     });
@@ -157,7 +156,7 @@ describe('Creating stores', function() {
         });
 
         function createPromiseForTest(store) {
-            return Q.Promise(function(resolve) {
+            return new Promise(function(resolve) {
                 var storeTriggered = function (args) {
                     args = args.map(function (arg) {
                       return '[...] ' + arg;
@@ -202,7 +201,7 @@ describe('Creating stores', function() {
         it('should get initial state from getInitialState() returned promise', function() {
             var store = new class extends baseStore {
                 get state() {
-                    return Q.Promise(function (resolve) {
+                    return new Promise(function (resolve) {
                         setTimeout(function () {
                             resolve(['initial state']);
                         }, 20);

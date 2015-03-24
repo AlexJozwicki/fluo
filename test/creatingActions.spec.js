@@ -1,8 +1,8 @@
 var chai = require('chai'),
     assert = chai.assert,
     fluo = require('../src'),
-    Q = require('q'),
-    sinon = require('sinon');
+    sinon = require('sinon'),
+    Q = require('q');
 
 chai.use(require('chai-as-promised'));
 
@@ -33,9 +33,9 @@ describe('Creating action', function() {
             action = new fluo.Action(def);
 
         assert.deepEqual(action.children, ["foo", "BAR"]);
-        assert.equal(action.foo._isAction, true);
+        assert.equal(action.foo.isAction, true);
         assert.deepEqual(action.foo.children, []);
-        assert.equal(action.BAR._isAction, true);
+        assert.equal(action.BAR.isAction, true);
 
     });
 
@@ -45,8 +45,8 @@ describe('Creating action', function() {
 
         assert.equal(action.asyncResult, true);
         assert.deepEqual(action.children, ["completed", "failed"]);
-        assert.equal(action.completed._isAction, true);
-        assert.equal(action.failed._isAction, true);
+        assert.equal(action.completed.isAction, true);
+        assert.equal(action.failed.isAction, true);
     });
 
     var action,
@@ -87,7 +87,7 @@ describe('Creating action', function() {
         var promise;
 
         beforeEach(function() {
-            promise = Q.promise(function(resolve) {
+            promise = new Promise(function(resolve) {
                 action.listen(function() {
                     resolve(Array.prototype.slice.call(arguments, 0));
                 });
@@ -185,7 +185,7 @@ describe('Creating actions with children to an action definition object', functi
         var promise;
 
         beforeEach(function() {
-            promise = Q.promise(function(resolve) {
+            promise = new Promise(function(resolve) {
                 actions.bar.baz.listen(function() {
                     resolve(Array.prototype.slice.call(arguments, 0));
                 }, {}); // pass empty context
@@ -205,7 +205,7 @@ describe('Creating actions with children to an action definition object', functi
 
         beforeEach(function() {
             // promise resolves on foo.completed
-            promise = Q.promise(function(resolve) {
+            promise = new Promise(function(resolve) {
                 actions.foo.completed.listen(function(){
                     resolve.apply(null, arguments);
                 }, {}); // pass empty context

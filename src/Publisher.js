@@ -17,6 +17,8 @@ class Publisher {
         this.dispatchPromises_ = [];
     }
 
+    get isPublisher() { return true; }
+
 
     /**
      * Hook used by the publisher that is invoked before emitting
@@ -157,7 +159,7 @@ class Publisher {
 
 
     canHandlePromise() {
-        return _.isPublisher(this.completed) && _.isPublisher(this.failed);
+        return this.completed && this.failed && this.completed.isPublisher && this.failed.isPublisher;
     }
 
     /**

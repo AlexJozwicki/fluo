@@ -1,7 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
-    fluo = require('../src'),
-    Q = require('q');
+    fluo = require('../src');
 
 chai.use(require('chai-as-promised'));
 
@@ -20,7 +19,7 @@ describe('Composed listenables', function() {
 
 
     it('should emit when all listenables emit', function() {
-        var promise = Q.Promise(function(resolve) {
+        var promise = new Promise(function(resolve) {
             all.listen(function() {
                 resolve(Array.prototype.slice.call(arguments, 0));
             });
@@ -70,7 +69,7 @@ describe('Composed listenables', function() {
 
 
     it('should emit multiple times', function() {
-        var promise = Q.promise(function(resolve) {
+        var promise = new Promise(function(resolve) {
             var callArgs = [];
             all.listen(function() {
                 callArgs.push([].slice.call(arguments));
@@ -96,7 +95,7 @@ describe('Composed listenables', function() {
 
 
     it('should emit with the last arguments it received', function() {
-        var promise = Q.Promise(function(resolve) {
+        var promise = new Promise(function(resolve) {
           all.listen(function() {
               resolve(Array.prototype.slice.call(arguments, 0));
           });
@@ -139,7 +138,7 @@ describe('Composed listenable with stores', function() {
     });
 
     it('should emit when action is invoked', function() {
-        var promise = Q.promise(function(resolve) {
+        var promise = new Promise(function(resolve) {
             all.listen(function() {
                 resolve(Array.prototype.slice.call(arguments, 0));
             });
@@ -164,7 +163,7 @@ describe('Composed listenable with stores', function() {
         });
 
         it('should emit when action is invoked', function() {
-            var promise = Q.promise(function(resolve) {
+            var promise = new Promise(function(resolve) {
                 storeAll.listen(function() {
                     resolve(Array.prototype.slice.call(arguments, 0));
                 });

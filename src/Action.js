@@ -47,7 +47,7 @@ class Action extends Publisher {
         return functor;
     }
 
-    get _isAction() { return true; }
+    get isAction() { return true; }
 
 
     /**

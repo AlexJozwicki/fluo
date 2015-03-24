@@ -2,7 +2,7 @@
     "maxerr": 50,
 
     "curly": true,
-    "unused": true,
+    "unused": false,
     "undef": true,
     "proto": true,
 
