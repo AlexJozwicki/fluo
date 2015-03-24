@@ -10,6 +10,9 @@ module.exports = function(grunt) {
     },
     mochaTest: {
       test: {
+        options: {
+            require: 'babel/register'
+        }
         src: ['test/**/*.spec.js']
       }
     },
@@ -20,7 +23,8 @@ module.exports = function(grunt) {
         options: {
           bundleOptions: {
             standalone: 'fluo'
-          }
+          },
+          transform: ['babelify']
         },
       }
     },
@@ -48,7 +52,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint', 'mochaTest', 'karma']);
 
-  grunt.registerTask('build', ['test', 'browserify', 'uglify']);
+  grunt.registerTask('build', ['browserify', 'uglify', 'test' ]);
 
   grunt.registerTask('default', ['watch']);
 

@@ -29,6 +29,8 @@
     "native-promise-only": "^0.7.6-a"
   },
   "devDependencies": {
+    "babel": "^4.7.16",
+    "babelify": "^5.0.4",
     "benchmark": "^1.0.0",
     "browserify": "^5.11.1",
     "chai": "^1.9.1",
@@ -38,18 +40,18 @@
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-uglify": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-karma": "^0.9.0",
     "grunt-mocha-test": "^0.11.0",
+    "karma": "0.12.23",
+    "karma-bro": "^0.7.0",
+    "karma-commonjs": "0.0.11",
+    "karma-mocha": "^0.1.9",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sauce-launcher": "^0.2.10",
+    "karma-spec-reporter": "0.0.13",
     "matchdep": "^0.3.0",
     "mocha": "^1.21.3",
     "q": "^1.0.1",
-    "sinon": "^1.10.3",
-    "karma-commonjs": "0.0.11",
-    "karma": "0.12.23",
-    "karma-mocha": "^0.1.9",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "karma-bro": "^0.7.0",
-    "karma-spec-reporter": "0.0.13",
-    "grunt-karma": "^0.9.0",
-    "karma-sauce-launcher": "^0.2.10"
+    "sinon": "^1.10.3"
   }
 }
