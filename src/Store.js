@@ -8,32 +8,29 @@ var Listener = require('./Listener');
  * @extends {Listener}
  * @param {Object=} methods Data store object methods
  */
-var Store = function (methods) {
-    Listener.call(this);
+class Store extends Listener {
+    constructor(methods) {
+        Listener.call(this);
 
-    this.eventType = 'change';
+        this.eventType = 'change';
 
-    if (methods) {
-        _.bindMethods(methods, this);
-        _.copyPropertiesOf(methods, this);
-    }
+        if (methods) {
+            _.bindMethods(methods, this);
+            _.copyPropertiesOf(methods, this);
+        }
 
-    this.init();
+        this.init();
 
-    if (this.listenables) {
-        var arr = [].concat(this.listenables);
-        for (var i = 0; i < arr.length; ++i) {
-            this.listenToMany(arr[i]);
+        if (this.listenables) {
+            var arr = [].concat(this.listenables);
+            for (var i = 0; i < arr.length; ++i) {
+                this.listenToMany(arr[i]);
+            }
         }
     }
-};
 
-_.inherits(Store, Listener);
-
-
-Store.prototype.init = function () {
-  // overrides encouraged
-};
-
+    init() {
+    }
+}
 
 module.exports = Store;
