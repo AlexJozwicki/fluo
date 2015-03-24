@@ -1,6 +1,5 @@
-var _ = require('./utils');
-
-var staticJoinCreator = require('./staticJoinCreator');
+var _           = require( './utils' );
+var JoinStores  = require( './JoinStores' );
 
 
 exports.Action      = require('./Action');
@@ -9,10 +8,10 @@ exports.Publisher   = require('./Publisher');
 exports.Store       = require('./Store');
 
 
-exports.joinTrailing = exports.all = staticJoinCreator("last"); // fluo.all alias for backward compatibility
-exports.joinLeading = staticJoinCreator("first");
-exports.joinStrict = staticJoinCreator("strict");
-exports.joinConcat = staticJoinCreator("all");
+exports.joinTrailing    = exports.all = JoinStores.JoinTrailing;
+exports.joinLeading     = JoinStores.JoinLeading;
+exports.joinStrict      = JoinStores.JoinStrict;
+exports.joinConcat      = JoinStores.JoinConcat;
 
 
 exports.EventEmitter = _.EventEmitter;
@@ -54,10 +53,6 @@ exports.nextTick = function(nextTick) {
     _.nextTick = nextTick;
 };
 
-/**
- * Provides the set of created actions and stores for introspection
- */
-exports.__keep = require('./keep');
 
 /**
  * Warn if Function.prototype.bind not available

@@ -1,21 +1,12 @@
-var _ = require('./utils');
-
-var Publisher = require('./Publisher');
-var keep = require('./keep');
+var Publisher = require( './Publisher' );
 
 
 /**
- * @constructor
- * @extends {Publisher}
+ *
  */
 class Action extends Publisher {
-    constructor(definition) {
+    constructor( definition = {} ) {
         super( this );
-
-        definition = definition || {};
-        if (!_.isObject(definition)) {
-          definition = { actionType: definition };
-        }
 
         //this.actionType = 'action';
         this.eventType = 'event';
@@ -26,8 +17,6 @@ class Action extends Publisher {
             this.children.push('completed', 'failed');
         }
 
-        //delete definition.children;
-        //_.extend(this, definition);
         if( definition.preEmit ) {
             this.preEmit = definition.preEmit;
         }
@@ -41,9 +30,6 @@ class Action extends Publisher {
         var functor = trigger.bind(this);
         functor.__proto__ = this;
 
-        // why do we need this ?
-        keep.createdActions.push( functor );
-
         return functor;
     }
 
@@ -54,11 +40,7 @@ class Action extends Publisher {
      * @protected
      */
     createChildActions() {
-        var children = this.children;
-        for (var i = 0; i < children.length; ++i) {
-            var name = children[i];
-            this[name] = new Action({ actionType: name });
-        }
+        this.children.forEach( ( childName ) => this[childName] = new Action({ actionType: childName }) );
     }
 }
 

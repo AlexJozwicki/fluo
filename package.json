@@ -2,13 +2,13 @@
   "name": "fluo",
   "version": "1.0.3",
   "description": "A prototype-based fork of the Reflux data flow library similar to Facebook Flux",
-  "main": "index.js",
+  "main": "dist/fluo.js",
   "scripts": {
     "test": "grunt test",
     "benchmark": "node test/benchmarks",
     "build": "grunt build"
   },
-  "author": "Jan Kuča <jan@jankuca.com> (http://jankuca.com)",
+  "author": "Alexandre Jozwicki",
   "contributors": [
     "Jan Kuča <jan@jankuca.com> (http://jankuca.com)",
     "Mikael Brassman"
@@ -16,7 +16,7 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jankuca/fluo.git"
+    "url": "http://github.com/AlexJozwicki/fluo.git"
   },
   "keywords": [
     "react",
