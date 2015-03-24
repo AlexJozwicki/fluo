@@ -177,27 +177,6 @@ describe('Composed listenable with stores', function() {
                 store2.listenTo(storeAll, function() {});
             }, Error);
         });
-
-        describe('and with a component listening to other listenables', function() {
-
-            var Component,
-                anotherAction;
-
-            beforeEach(function () {
-                anotherAction = new fluo.Action();
-                Component = function() {
-                    this.listenTo(storeAll, this.triggerSync);
-                    this.listenTo(anotherAction);
-                };
-                Component.prototype = fluo.ListenerMixin;
-            });
-
-            it('should not crash', function() {
-                new Component();
-            });
-
-        });
-
     });
 
 });

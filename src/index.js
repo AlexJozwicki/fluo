@@ -8,16 +8,6 @@ exports.Listener = require('./Listener');
 exports.Publisher = require('./Publisher');
 exports.Store = require('./Store');
 
-exports.connect = require('./connect');
-exports.connectFilter = require('./connectFilter');
-
-exports.ListenerMixin = require('./ListenerMixin');
-exports.PublisherMixin = require('./PublisherMixin');
-
-exports.listenTo = require('./listenTo');
-exports.listenToMany = require('./listenToMany');
-
-
 
 exports.joinTrailing = exports.all = staticJoinCreator("last"); // fluo.all alias for backward compatibility
 exports.joinLeading = staticJoinCreator("first");
