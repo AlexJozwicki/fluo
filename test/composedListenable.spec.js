@@ -1,7 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
     fluo = require('../src'),
-    _ = require('../src/utils'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -190,7 +189,7 @@ describe('Composed listenable with stores', function() {
                     this.listenTo(storeAll, this.triggerSync);
                     this.listenTo(anotherAction);
                 };
-                _.extend(Component.prototype, fluo.ListenerMixin);
+                Component.prototype = fluo.ListenerMixin;
             });
 
             it('should not crash', function() {

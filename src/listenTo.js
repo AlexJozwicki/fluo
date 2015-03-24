@@ -1,5 +1,3 @@
-var _ = require('./utils');
-
 var Listener = require('./Listener');
 
 
@@ -21,7 +19,8 @@ module.exports = function(listenable,callback,initial){
          */
         componentDidMount: function() {
             this.__listener = new Listener();
-            _.link(this.__listener, this);
+            this.listenTo = this.__listener.listenTo.bind(this.__listener);
+            this.subscriptions = this.__listener.subscriptions;
 
             this.listenTo(listenable, callback, initial);
         },

@@ -18,7 +18,9 @@ module.exports = function connect(listenable, key) {
         },
         componentDidMount: function () {
             this.__listener = new Listener();
-            _.link(this.__listener, this);
+//            _.link(this.__listener, this);
+            this.listenTo = this.__listener.listenTo.bind(this.__listener);
+            this.subscriptions = this.__listener.subscriptions;
 
             if (typeof key === 'undefined') {
                 this.listenTo(listenable, this.setState);

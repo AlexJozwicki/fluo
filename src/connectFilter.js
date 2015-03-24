@@ -23,7 +23,10 @@ module.exports = function(listenable, key, filterFunc) {
         },
         componentDidMount: function() {
             this.__listener = new Listener();
-            _.link(this.__listener, this);
+//            _.link(this.__listener, this);
+            this.listenTo = this.__listener.listenTo.bind(this.__listener);
+            this.subscriptions = this.__listener.subscriptions;
+
 
             var self = this;
             var cb = function (value) {
