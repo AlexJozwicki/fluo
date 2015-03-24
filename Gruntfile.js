@@ -12,7 +12,7 @@ module.exports = function(grunt) {
       test: {
         options: {
             require: 'babel/register'
-        }
+        },
         src: ['test/**/*.spec.js']
       }
     },
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['jshint', 'mochaTest', 'karma']);
+  grunt.registerTask('test', ['jshint', 'mochaTest' ]);
 
   grunt.registerTask('build', ['browserify', 'uglify', 'test' ]);
 
