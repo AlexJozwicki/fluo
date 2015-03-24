@@ -17,8 +17,7 @@ class Action extends Publisher {
           definition = { actionType: definition };
         }
 
-        this._isAction = true;
-        this.actionType = 'action';
+        //this.actionType = 'action';
         this.eventType = 'event';
         this.asyncResult = !!definition.asyncResult;
 
@@ -35,10 +34,13 @@ class Action extends Publisher {
         var functor = trigger.bind(this);
         functor.__proto__ = this;
 
+        // why do we need this ?
         keep.createdActions.push( functor );
 
         return functor;
     }
+
+    get _isAction() { return true; }
 
 
     /**

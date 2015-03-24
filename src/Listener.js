@@ -157,8 +157,8 @@ class Listener extends Publisher {
         }
 
         var self = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
-            var data = listenable.getInitialState();
+        if (_.isFunction(defaultCallback) && listenable.state ) {
+            var data = listenable.state;
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
                     defaultCallback.apply(self, arguments);

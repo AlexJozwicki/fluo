@@ -191,7 +191,7 @@ describe('Creating stores', function() {
 
         it('should get initial state from getInitialState()', function() {
             var store = new class extends baseStore {
-                getInitialState() {
+                get state() {
                     return ['initial state'];
                 }
             }();
@@ -201,7 +201,7 @@ describe('Creating stores', function() {
 
         it('should get initial state from getInitialState() returned promise', function() {
             var store = new class extends baseStore {
-                getInitialState() {
+                get state() {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
                             resolve(['initial state']);
@@ -224,17 +224,20 @@ describe('Creating stores', function() {
                 listenables = {
                     foo: {listen:sinon.spy()},
                     bar: {
-                        listen:sinon.spy(),
-                        getInitialState:sinon.stub().returns(initialbarstate)
+                        listen:sinon.spy()
                     },
                     baz: {
-                        listen:sinon.spy(),
-                        getInitialState:sinon.stub().returns(initialbazstate)
+                        listen:sinon.spy()
                     },
                     missing: {
                         listen:sinon.spy()
                     }
                 };
+
+                var barState = sinon.stub().returns(initialbarstate);
+                var bazState = sinon.stub().returns(initialbazstate);
+                Object.defineProperty( listenables.bar, 'state', { get: barState } );
+                Object.defineProperty( listenables.baz, 'state', { get: bazState } );
 
                 class _cl extends fluo.Store {
                     constructor() {
@@ -260,12 +263,12 @@ describe('Creating stores', function() {
             });
 
             it("should call main callback if listenable has getInitialState but listener has no default-specific cb",function(){
-                assert.equal(listenables.bar.getInitialState.callCount,1);
+                assert.equal(barState.callCount,2);
                 assert.equal(store.bar.firstCall.args[0],initialbarstate);
             });
 
             it("should call default callback if exist and listenable has getInitialState",function(){
-                assert.equal(listenables.baz.getInitialState.callCount,1);
+                assert.equal(bazState.callCount,2);
                 assert.equal(store.onBaz.callCount,0);
                 assert.equal(store.onBazDefault.firstCall.args[0],initialbazstate);
             });
