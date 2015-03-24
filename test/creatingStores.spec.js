@@ -1,7 +1,6 @@
 var chai = require('chai'),
     assert = chai.assert,
     fluo = require('../src'),
-    _ = require('../src/utils'),
     Q = require('q'),
     sinon = require('sinon');
 
@@ -20,16 +19,19 @@ describe('Creating stores', function() {
 
             promise = Q.Promise(function(resolve) {
                 action = new fluo.Action();
-                store = new fluo.Store({
-                    init: function() {
+                class AnonStore extends fluo.Store {
+                    init() {
                         unsubCallback = this.listenTo(action, this.actionCalled);
-                    },
-                    actionCalled: function() {
+                    }
+
+                    actionCalled() {
                         var args = Array.prototype.slice.call(arguments, 0);
                         this.trigger(args);
                         resolve(args);
                     }
-                });
+                }
+
+                store = new AnonStore();
             });
         });
 
@@ -81,12 +83,12 @@ describe('Creating stores', function() {
         });
 
         it('should be able to reuse action again further down the chain', function() {
-            new fluo.Store({
-                init: function() {
+            new class extends fluo.Store {
+                init() {
                     this.listenTo(store, this.trigger);
                     this.listenTo(action, this.trigger);
                 }
-            });
+            }();
 
             action(1337);
 
@@ -134,15 +136,16 @@ describe('Creating stores', function() {
 
     describe('with one store listening to another store', function() {
         var action,
-            baseDefinition;
+            baseStore;
 
         beforeEach(function () {
             action = new fluo.Action();
-            baseDefinition = {
-                init: function() {
+            baseStore = class extends fluo.Store {
+                init() {
                     this.listenTo(action, this.actionCalled);
-                },
-                actionCalled: function() {
+                }
+
+                actionCalled() {
                     var args = Array.prototype.slice.call(arguments, 0);
                     this.trigger(args);
                 }
@@ -168,37 +171,38 @@ describe('Creating stores', function() {
         }
 
         it('should be triggered with argument from upstream store', function() {
-            var promise = createPromiseForTest(new fluo.Store(baseDefinition));
+            var promise = createPromiseForTest(new baseStore());
             action('my argument');
             return assert.eventually.equal(promise, '[...] my argument');
         });
 
         it('should be triggered with arbitrary arguments from upstream store', function() {
-            var promise = createPromiseForTest(new fluo.Store(baseDefinition));
+            var promise = createPromiseForTest(new baseStore());
             action(1337, 'ninja');
             return assert.eventually.deepEqual(promise, ['[...] 1337', '[...] ninja']);
         });
 
         it('should get initial state from getInitialState()', function() {
-            var store = new fluo.Store(_.extend(baseDefinition, {
-                getInitialState: function () {
+            var store = new class extends baseStore {
+                getInitialState() {
                     return ['initial state'];
                 }
-            }));
+            }();
             var promise = createPromiseForTest(store);
             return assert.eventually.equal(promise, '[...] initial state');
         });
 
         it('should get initial state from getInitialState() returned promise', function() {
-            var store = new fluo.Store(_.extend(baseDefinition, {
-                getInitialState: function () {
+            var store = new class extends baseStore {
+                getInitialState() {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
                             resolve(['initial state']);
                         }, 20);
                     });
                 }
-            }));
+            }();
+
             var promise = createPromiseForTest(store);
             return assert.eventually.equal(promise, '[...] initial state');
         });
@@ -228,10 +232,9 @@ describe('Creating stores', function() {
                     onFoo:"methodFOO",
                     bar:sinon.spy(),
                     onBaz:sinon.spy(),
-                    onBazDefault:sinon.spy(),
-                    listenables:listenables
+                    onBazDefault:sinon.spy()
                 },
-                store = new fluo.Store(def);
+                store = new fluo.Store(def, listenables);
 
             it("should listenTo all listenables with the corresponding callbacks",function(){
                 assert.deepEqual(listenables.foo.listen.firstCall.args,[store.onFoo,store]);
@@ -259,8 +262,8 @@ describe('Creating stores', function() {
             var first = {foo:{listen:sinon.spy()}},
                 second = {bar:{listen:sinon.spy()},baz:{listen:sinon.spy()}},
                 arr = [first,second],
-                def = {foo:"foo",bar:"bar",baz:"baz",listenables:arr},
-                store = new fluo.Store(def);
+                def = {foo:"foo",bar:"bar",baz:"baz"},
+                store = new fluo.Store(def, arr);
 
             it("should add listeners from all objects in the array",function(){
                 assert.deepEqual(first.foo.listen.firstCall.args,[def.foo,store]);

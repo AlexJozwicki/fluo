@@ -10,7 +10,7 @@ var keep = require('./keep');
  * @param {Object=} methods Data store object methods
  */
 class Store extends Listener {
-    constructor(methods) {
+    constructor(methods, listenables) {
         super();
         this.eventType = 'change';
 
@@ -21,8 +21,8 @@ class Store extends Listener {
 
         this.init();
 
-        if (this.listenables) {
-            var arr = [].concat(this.listenables);
+        if (listenables) {
+            var arr = [].concat(listenables);
             for (var i = 0; i < arr.length; ++i) {
                 this.listenToMany(arr[i]);
             }
