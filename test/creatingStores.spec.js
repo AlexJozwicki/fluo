@@ -20,7 +20,8 @@ describe('Creating stores', function() {
             promise = Q.Promise(function(resolve) {
                 action = new fluo.Action();
                 class AnonStore extends fluo.Store {
-                    init() {
+                    constructor() {
+                        super();
                         unsubCallback = this.listenTo(action, this.actionCalled);
                     }
 
@@ -84,7 +85,9 @@ describe('Creating stores', function() {
 
         it('should be able to reuse action again further down the chain', function() {
             new class extends fluo.Store {
-                init() {
+                constructor() {
+                    super();
+
                     this.listenTo(store, this.trigger);
                     this.listenTo(action, this.trigger);
                 }
@@ -141,7 +144,8 @@ describe('Creating stores', function() {
         beforeEach(function () {
             action = new fluo.Action();
             baseStore = class extends fluo.Store {
-                init() {
+                constructor() {
+                    super();
                     this.listenTo(action, this.actionCalled);
                 }
 
@@ -161,12 +165,15 @@ describe('Creating stores', function() {
                     this.trigger(args);
                     resolve(args);
                 };
-                new fluo.Store({
-                    init: function() {
+                class _cl extends fluo.Store {
+                    constructor() {
+                        super();
                         this.listenTo(store, this.storeTriggered, storeTriggered);
-                    },
-                    storeTriggered: storeTriggered
-                });
+                    }
+                }
+                _cl.prototype.storeTriggered = storeTriggered;
+
+                new _cl();
             });
         }
 
@@ -227,14 +234,20 @@ describe('Creating stores', function() {
                     missing: {
                         listen:sinon.spy()
                     }
-                },
-                def = {
-                    onFoo:"methodFOO",
-                    bar:sinon.spy(),
-                    onBaz:sinon.spy(),
-                    onBazDefault:sinon.spy()
-                },
-                store = new fluo.Store(def, listenables);
+                };
+
+                class _cl extends fluo.Store {
+                    constructor() {
+                        super( listenables);
+                    }
+                }
+
+                _cl.prototype.onFoo = "methodFOO";
+                _cl.prototype.bar = sinon.spy();
+                _cl.prototype.onBaz = sinon.spy();
+                _cl.prototype.onBazDefault = sinon.spy();
+
+                var store = new _cl();
 
             it("should listenTo all listenables with the corresponding callbacks",function(){
                 assert.deepEqual(listenables.foo.listen.firstCall.args,[store.onFoo,store]);
@@ -248,13 +261,13 @@ describe('Creating stores', function() {
 
             it("should call main callback if listenable has getInitialState but listener has no default-specific cb",function(){
                 assert.equal(listenables.bar.getInitialState.callCount,1);
-                assert.equal(def.bar.firstCall.args[0],initialbarstate);
+                assert.equal(store.bar.firstCall.args[0],initialbarstate);
             });
 
             it("should call default callback if exist and listenable has getInitialState",function(){
                 assert.equal(listenables.baz.getInitialState.callCount,1);
-                assert.equal(def.onBaz.callCount,0);
-                assert.equal(def.onBazDefault.firstCall.args[0],initialbazstate);
+                assert.equal(store.onBaz.callCount,0);
+                assert.equal(store.onBazDefault.firstCall.args[0],initialbazstate);
             });
         });
 
@@ -262,8 +275,17 @@ describe('Creating stores', function() {
             var first = {foo:{listen:sinon.spy()}},
                 second = {bar:{listen:sinon.spy()},baz:{listen:sinon.spy()}},
                 arr = [first,second],
-                def = {foo:"foo",bar:"bar",baz:"baz"},
-                store = new fluo.Store(def, arr);
+                def = {foo:"foo",bar:"bar",baz:"baz"};
+                class _cl extends fluo.Store {
+                    constructor() {
+                        super( arr);
+                    }
+                }
+                _cl.prototype.foo = "foo";
+                _cl.prototype.bar = "bar";
+                _cl.prototype.baz = "baz";
+
+                var store = new _cl();
 
             it("should add listeners from all objects in the array",function(){
                 assert.deepEqual(first.foo.listen.firstCall.args,[def.foo,store]);
@@ -274,43 +296,15 @@ describe('Creating stores', function() {
         });
     });
 
-    it("should copy all props from definition",function(){
-        var def = {random:"FOO",preEmit:"BAZ",blah:"BAH"},
-            store = new fluo.Store(def);
-        assert.equal(store.random,def.random);
-        assert.equal(store.preEmit,def.preEmit);
-        assert.equal(store.blah,def.blah);
-    });
-
-    describe('store methods', function() {
-        var initReflect,
-            store = new fluo.Store({
-                init: function() {
-                    initReflect = this.reflect;
-                },
-                reflect: function() {
-                    return this;
-                }
-            });
-
-        it('should be bound to store instance before init', function() {
-            return assert.equal(store, initReflect());
-        });
-
-        it('should be bound to store instance', function() {
-            var reflect = store.reflect;
-            return assert.equal(store, reflect());
-        });
-    });
 
     describe('getters', function() {
         var didRun = false;
 
-        new fluo.Store({
+        new class extends fluo.Store {
             get dontRunMe() {
                 didRun = true;
             }
-        });
+        }();
 
         it('should not be invoked during store creation', function() {
             return assert.isFalse(didRun);

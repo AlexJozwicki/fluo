@@ -5,50 +5,53 @@ var textUpdate = fluo.createAction();
 var statusUpdate = fluo.createAction();
 
 // Creating a Data Store - Listening to textUpdate action
-var textStore = new fluo.Store({
-    init: function() {
+var textStore = new class extends fluo.Store {
+    constructor() {
+        super();
         this.listenTo(textUpdate, this.output);
-    },
-    output: function() {
+    }
+    output() {
         var i, args = Array.prototype.slice.call(arguments, 0);
         for (i = 0; i < args.length; i++) {
             this.writeOut(args[i]);
         }
-    },
-    writeOut: function(text) {
+    }
+    writeOut(text) {
         this.triggerSync(text);
     }
-});
+}();
 
 // Creating a DataStore
-var statusStore = new fluo.Store({
-    init: function() {
+var statusStore = new class extends fluo.Store {
+    constructor() {
+        super();
         this.listenTo(statusUpdate, this.output);
-    },
-    output: function(flag) {
+    }
+    output(flag) {
         var status = flag ? 'ONLINE' : 'OFFLINE';
         this.triggerSync(status);
     }
-});
+}();
 
 // Creating an aggregate DataStore that is listening to textStore and statusStore
-var storyStore = new fluo.Store({
-    init: function() {
+var storyStore = new class extends fluo.Store {
+    constructor() {
+        super();
         this.listenTo(statusStore, this.statusChanged);
         this.listenTo(textStore, this.textUpdated);
         this.storyArr = [];
-    },
-    statusChanged: function(flag) {
+    }
+    statusChanged(flag) {
         if (flag === 'OFFLINE') {
             this.triggerSync('Once upon a time the user did the following: ' + this.storyArr.join(', '));
             // empty storyArr
             this.storyArr.splice(0, this.storyArr.length);
         }
-    },
-    textUpdated: function(text) {
+    }
+    textUpdated(text) {
         this.storyArr.push(text);
     }
-});
+}();
 
 // Fairly simple view component that outputs to console
 function ConsoleComponent() {

@@ -1,5 +1,3 @@
-var _ = require('./utils');
-
 var Listener = require('./Listener');
 var keep = require('./keep');
 
@@ -10,16 +8,9 @@ var keep = require('./keep');
  * @param {Object=} methods Data store object methods
  */
 class Store extends Listener {
-    constructor(methods, listenables) {
+    constructor(listenables) {
         super();
         this.eventType = 'change';
-
-        if (methods) {
-            _.bindMethods(methods, this);
-            _.copyPropertiesOf(methods, this);
-        }
-
-        this.init();
 
         if (listenables) {
             var arr = [].concat(listenables);
@@ -30,8 +21,6 @@ class Store extends Listener {
 
         keep.createdStores.push( this );
     }
-
-    init() {}
 }
 
 module.exports = Store;

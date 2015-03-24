@@ -65,10 +65,10 @@ describe('Creating action', function() {
             asyncaction = new fluo.Action(),
             synccalled = false,
             asynccalled = false,
-            store = new fluo.Store({
-                sync: function(){synccalled=true;},
-                async: function(){asynccalled=true;}
-            });
+            store = new class extends fluo.Store {
+                sync(){synccalled=true;}
+                async(){asynccalled=true;}
+            }();
         store.listenTo(syncaction,"sync");
         store.listenTo(asyncaction,"async");
         it("should be asynchronous when not specified",function(){

@@ -5,11 +5,12 @@ var fluo = require('../../src'),
     noop = function() {},
     NUMBER_OF_LISTENERS = 100;
 
-store = new fluo.Store({
-    init: function() {
+store = new class extends fluo.Store {
+    constructor() {
+        super();
         this.listenTo(action, this.trigger);
     }
-});
+}();
 
 // noops are listening to the store to emit
 for (i = 0; i < NUMBER_OF_LISTENERS; i++) {

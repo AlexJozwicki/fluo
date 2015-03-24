@@ -19,11 +19,12 @@ var joinStrategyMethodNames = {
 module.exports = function staticJoinCreator(strategy) {
     return function(/* listenables... */) {
         var listenables = slice.call(arguments);
-        return new Store({
-            init: function(){
+        return new class extends Store {
+            constructor(){
+                super();
                 var method = this[joinStrategyMethodNames[strategy]];
                 method.apply(this, listenables.concat('trigger'));
             }
-        });
+        }();
     };
 };

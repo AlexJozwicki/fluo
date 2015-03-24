@@ -123,16 +123,18 @@ describe('Composed listenable with stores', function() {
 
     beforeEach(function () {
         action = new fluo.Action();
-        store1 = new fluo.Store({
-            init: function() {
+        store1 = new class extends fluo.Store {
+            constructor() {
+                super();
                 this.listenTo(action, this.triggerSync);
             }
-        });
-        store2 = new fluo.Store({
-            init: function() {
+        }();
+        store2 = new class extends fluo.Store {
+            constructor() {
+                super();
                 this.listenTo(action, this.triggerSync);
             }
-        });
+        }();
         all = fluo.all(store1, store2);
     });
 
@@ -153,11 +155,12 @@ describe('Composed listenable with stores', function() {
         var storeAll;
 
         beforeEach(function () {
-            storeAll = new fluo.Store({
-                init: function() {
+            storeAll = new class extends fluo.Store {
+                constructor() {
+                    super();
                     this.listenTo(all, this.triggerSync);
                 }
-            });
+            }();
         });
 
         it('should emit when action is invoked', function() {

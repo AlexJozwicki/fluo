@@ -23,7 +23,11 @@ describe('with the keep reset', function() {
         var store;
 
         beforeEach(function () {
-            store = new fluo.Store({ init: function() { /* no-op */} });
+            store = new class extends fluo.Store {
+                constructor() {
+                    super();
+                }
+            }();
         });
 
         it('should be in the keep', function() {
