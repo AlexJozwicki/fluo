@@ -10,8 +10,7 @@ var Listener = require('./Listener');
  */
 class Store extends Listener {
     constructor(methods) {
-        Listener.call(this);
-
+        super();
         this.eventType = 'change';
 
         if (methods) {
@@ -29,8 +28,7 @@ class Store extends Listener {
         }
     }
 
-    init() {
-    }
+    init() {}
 }
 
 module.exports = Store;
