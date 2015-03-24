@@ -5,7 +5,7 @@ var fluo = require('../../src'),
     noop = function() {},
     NUMBER_OF_LISTENERS = 100;
 
-store = fluo.createStore({
+store = new fluo.Store({
     init: function() {
         this.listenTo(action, this.trigger);
     }

@@ -16,7 +16,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         component = Object.create(fluo.ListenerMixin);
         delete component.subscriptions;
 
-        action = fluo.createAction();
+        action = new fluo.Action();
 
         promise = Q.Promise(function(resolve) {
             component.listenTo(action, function() {
@@ -39,7 +39,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
 
     describe('using a store and listening to it', function() {
         beforeEach(function () {
-            store = fluo.createStore({
+            store = new fluo.Store({
                 init: function() {
                     this.listenTo(action, this.triggerSync);
                 }
@@ -70,7 +70,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         }
 
         it('should get initial state from getInitialState()', function () {
-            store = fluo.createStore({
+            store = new fluo.Store({
                 getInitialState: function () {
                     return 'initial state';
                 }
@@ -80,7 +80,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         });
 
         it('should get initial state from getInitialState() returned promise', function () {
-            store = fluo.createStore({
+            store = new fluo.Store({
                 getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {

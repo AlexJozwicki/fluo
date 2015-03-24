@@ -12,9 +12,9 @@ describe('Composed listenables', function() {
         all;
 
     beforeEach(function() {
-        action1 = fluo.createAction();
-        action2 = fluo.createAction();
-        action3 = fluo.createAction();
+        action1 = new fluo.Action();
+        action2 = new fluo.Action();
+        action3 = new fluo.Action();
         all = fluo.all(action1, action2, action3);
     });
 
@@ -122,13 +122,13 @@ describe('Composed listenable with stores', function() {
         all;
 
     beforeEach(function () {
-        action = fluo.createAction();
-        store1 = fluo.createStore({
+        action = new fluo.Action();
+        store1 = new fluo.Store({
             init: function() {
                 this.listenTo(action, this.triggerSync);
             }
         });
-        store2 = fluo.createStore({
+        store2 = new fluo.Store({
             init: function() {
                 this.listenTo(action, this.triggerSync);
             }
@@ -153,7 +153,7 @@ describe('Composed listenable with stores', function() {
         var storeAll;
 
         beforeEach(function () {
-            storeAll = fluo.createStore({
+            storeAll = new fluo.Store({
                 init: function() {
                     this.listenTo(all, this.triggerSync);
                 }
@@ -184,7 +184,7 @@ describe('Composed listenable with stores', function() {
                 anotherAction;
 
             beforeEach(function () {
-                anotherAction = fluo.createAction();
+                anotherAction = new fluo.Action();
                 Component = function() {
                     this.listenTo(storeAll, this.triggerSync);
                     this.listenTo(anotherAction);

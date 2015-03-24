@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    createAction = require('../src/createAction'),
+    fluo = require('../src'),
     listenToMany = require('../src/listenToMany'),
     _ = require('../src/utils');
 
@@ -45,8 +45,8 @@ describe('the listenToMany shorthand',function(){
     });
 
     describe('callbacks returning promises', function () {
-        var firstAction = createAction({ asyncResult: true });
-        var secondAction = createAction({ asyncResult: true });
+        var firstAction = new fluo.Action({ asyncResult: true });
+        var secondAction = new fluo.Action({ asyncResult: true });
         var listenables = {
             firstAction: firstAction,
             secondAction: secondAction

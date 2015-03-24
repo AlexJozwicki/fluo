@@ -418,9 +418,9 @@ describe("using the PublisherMixin",function(){
         });
 
         it("should resolve when completed",function(){
-            var action = fluo.createAction({ asyncResult: true });
+            var action = new fluo.Action({ asyncResult: true });
 
-            fluo.createStore({
+            new fluo.Store({
                 init: function() {
                     this.listenTo(action, this.onAction);
                 },
@@ -437,9 +437,9 @@ describe("using the PublisherMixin",function(){
         });
 
         it("should reject when failed",function(){
-            var action = fluo.createAction({ asyncResult: true });
+            var action = new fluo.Action({ asyncResult: true });
 
-            fluo.createStore({
+            new fluo.Store({
                 init: function() {
                     this.listenTo(action, this.onAction);
                 },

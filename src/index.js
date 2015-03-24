@@ -8,9 +8,6 @@ exports.Listener = require('./Listener');
 exports.Publisher = require('./Publisher');
 exports.Store = require('./Store');
 
-exports.createAction = require('./createAction');
-exports.createStore = require('./createStore');
-
 exports.connect = require('./connect');
 exports.connectFilter = require('./connectFilter');
 
@@ -45,7 +42,7 @@ exports.createActions = function(definitions) {
             var val = definitions[k];
             var actionType = _.isObject(val) ? k : val;
 
-            actions[actionType] = exports.createAction(val);
+            actions[actionType] = new exports.Action(val);
         }
     }
     return actions;

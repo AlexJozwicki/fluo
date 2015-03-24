@@ -17,14 +17,14 @@ describe('Creating aggregate stores', function() {
 
         beforeEach(function() {
             promise = Q.Promise(function(resolve) {
-                action = fluo.createAction();
-                store = fluo.createStore({
+                action = new fluo.Action();
+                store = new fluo.Store({
                     init: function() {
                         this.listenTo(action, this.triggerSync);
                         // pass to the triggerSync function immediately
                     }
                 });
-                aggregateStore = fluo.createStore({
+                aggregateStore = new fluo.Store({
                     init: function() {
                         this.listenTo(store, this.storeCalled);
                     },
@@ -57,7 +57,7 @@ describe('Creating aggregate stores', function() {
             var thirdStore;
 
             beforeEach(function() {
-                thirdStore = fluo.createStore({});
+                thirdStore = new fluo.Store({});
                 thirdStore.listenTo(aggregateStore, function() {});
             });
 

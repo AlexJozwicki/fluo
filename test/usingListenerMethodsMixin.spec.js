@@ -112,11 +112,11 @@ describe("using the ListenerMixin",function(){
     });
 
     describe('the hasListener method',function(){
-        var action1 = fluo.createAction(),
-            action2 = fluo.createAction(),
-            action3 = fluo.createAction(),
-            action4 = fluo.createAction(),
-            store = fluo.createStore();
+        var action1 = new fluo.Action(),
+            action2 = new fluo.Action(),
+            action3 = new fluo.Action(),
+            action4 = new fluo.Action(),
+            store = new fluo.Store();
         store.listenTo(action1,function(){});
         store.joinLeading(action1,action2,action3,function(){});
         it('should return true if context is listening',function(){

@@ -11,7 +11,7 @@ describe('with the keep reset', function() {
         var action;
 
         beforeEach(function () {
-            action = fluo.createAction();
+            action = new fluo.Action();
         });
 
         it('should be in the keep', function() {
@@ -23,7 +23,7 @@ describe('with the keep reset', function() {
         var store;
 
         beforeEach(function () {
-            store = fluo.createStore({ init: function() { /* no-op */} });
+            store = new fluo.Store({ init: function() { /* no-op */} });
         });
 
         it('should be in the keep', function() {

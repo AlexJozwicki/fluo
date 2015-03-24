@@ -1,5 +1,5 @@
 
-var createStore = require("./createStore");
+var Store = require("./Store");
 var slice = Array.prototype.slice;
 
 
@@ -19,7 +19,7 @@ var joinStrategyMethodNames = {
 module.exports = function staticJoinCreator(strategy) {
     return function(/* listenables... */) {
         var listenables = slice.call(arguments);
-        return createStore({
+        return new Store({
             init: function(){
                 var method = this[joinStrategyMethodNames[strategy]];
                 method.apply(this, listenables.concat('trigger'));

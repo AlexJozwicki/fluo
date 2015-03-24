@@ -1,15 +1,15 @@
 var assert = require('chai').assert,
     fluo = require('../src'),
-    Action = fluo.createAction,
-    Store = fluo.createStore,
+    Action = fluo.Action,
+    Store = fluo.Store,
     fn = function(){},
     sinon = require('sinon');
 
 describe('Stopping',function(){
     describe('listening to a publisher that\'s only part of a join',function(){
-        var store = Store(),
-            action1 = Action(),
-            action2 = Action();
+        var store = new Store(),
+            action1 = new Action(),
+            action2 = new Action();
         store.joinTrailing(action1,action2,function(){});
         it('should fail',function(){
             assert.equal(store.stopListeningTo(action1),false);
@@ -17,10 +17,10 @@ describe('Stopping',function(){
         });
     });
     describe('a join',function(){
-        var store = Store(),
-            action1 = Action(),
-            action2 = Action(),
-            action3 = Action(),
+        var store = new Store(),
+            action1 = new Action(),
+            action2 = new Action(),
+            action3 = new Action(),
             indivcallback = sinon.spy(),
             joincallback = sinon.spy(),
             subobj;
@@ -46,11 +46,11 @@ describe('Stopping',function(){
     describe('a single listen', function(){
         describe('by calling stop directly',function(){
             describe('when all is well',function(){
-                var store = Store(),
-                    action1 = Action(),
-                    action3 = Action();
+                var store = new Store(),
+                    action1 = new Action(),
+                    action3 = new Action();
                 store.listenTo(action1,fn);
-                store.listenTo(Action(),fn);
+                store.listenTo(new Action(),fn);
                 store.listenTo(action3,fn);
                 it('should remove that listener from the list but keep the others',function(){
                     store.subscriptions[1].stop();
@@ -60,9 +60,9 @@ describe('Stopping',function(){
                 });
             });
             describe('when the listener has already been removed from the list somehow',function(){
-                var store = Store();
-                store.listenTo(Action(),fn);
-                store.listenTo(Action(),fn);
+                var store = new Store();
+                store.listenTo(new Action(),fn);
+                store.listenTo(new Action(),fn);
                 it('should throw an error',function(){
                     assert.throws(function(){
                         store.subscriptions.pop().stop();
@@ -72,10 +72,10 @@ describe('Stopping',function(){
         });
         describe('by using stopListenTo',function(){
             describe('when all is well',function(){
-                var store = Store(),
-                    action1 = Action(),
-                    action2 = Action(),
-                    action3 = Action();
+                var store = new Store(),
+                    action1 = new Action(),
+                    action2 = new Action(),
+                    action3 = new Action();
                 store.listenTo(action1,fn);
                 store.listenTo(action2,fn);
                 store.listenTo(action3,fn);
@@ -90,8 +90,8 @@ describe('Stopping',function(){
                 });
             });
             describe('when the stop method won\'t remove it from the array',function(){
-                var store = Store(),
-                    action = Action();
+                var store = new Store(),
+                    action = new Action();
                 store.listenTo(action,fn);
                 store.subscriptions[0].stop = fn;
                 it('should throw an error',function(){
@@ -101,13 +101,13 @@ describe('Stopping',function(){
                 });
             });
             describe('when we weren\'t actually listening to the given listenable',function(){
-                var action1 = Action(),
-                    action2 = Action(),
-                    store = Store(),
+                var action1 = new Action(),
+                    action2 = new Action(),
+                    store = new Store(),
                     result;
                 store.listenTo(action1);
                 store.listenTo(action2);
-                result = Store().stopListeningTo(Action());
+                result = new Store().stopListeningTo(new Action());
                 it('should return false',function(){
                     assert.equal(false,result);
                 });
@@ -118,9 +118,9 @@ describe('Stopping',function(){
                 });
             });
             describe('when we don\'t have a subscriptions list',function(){
-                var store = Store(), result;
+                var store = new Store(), result;
                 delete store.subscriptions;
-                result = store.stopListeningTo(Action());
+                result = store.stopListeningTo(new Action());
                 it('should return false',function(){
                     assert.equal(result,false);
                 });
@@ -129,17 +129,17 @@ describe('Stopping',function(){
     });
     describe('all listens',function(){
         describe('when all is well',function(){
-            var store = Store();
-            store.listenTo(Action(),fn);
-            store.listenTo(Action(),fn);
+            var store = new Store();
+            store.listenTo(new Action(),fn);
+            store.listenTo(new Action(),fn);
             it('should clear the subscriptions list',function(){
                 store.stopListeningToAll();
                 assert.deepEqual([],store.subscriptions);
             });
         });
         describe('when a stop fails to remove the subscription object from the list',function(){
-            var store = Store();
-            store.listenTo(Action());
+            var store = new Store();
+            store.listenTo(new Action());
             store.subscriptions[0].stop = fn;
             it('should throw an error',function(){
                 assert.throws(function(){
@@ -148,7 +148,7 @@ describe('Stopping',function(){
             });
         });
         describe('when we don\'t have a subscriptions list',function(){
-            var store = Store();
+            var store = new Store();
             delete store.subscriptions;
             it('should be a noop',function(){
                 store.stopListeningToAll();

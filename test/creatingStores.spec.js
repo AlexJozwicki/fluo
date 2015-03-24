@@ -19,8 +19,8 @@ describe('Creating stores', function() {
             fluo.StoreMethods = {};
 
             promise = Q.Promise(function(resolve) {
-                action = fluo.createAction();
-                store = fluo.createStore({
+                action = new fluo.Action();
+                store = new fluo.Store({
                     init: function() {
                         unsubCallback = this.listenTo(action, this.actionCalled);
                     },
@@ -81,7 +81,7 @@ describe('Creating stores', function() {
         });
 
         it('should be able to reuse action again further down the chain', function() {
-            fluo.createStore({
+            new fluo.Store({
                 init: function() {
                     this.listenTo(store, this.trigger);
                     this.listenTo(action, this.trigger);
@@ -137,7 +137,7 @@ describe('Creating stores', function() {
             baseDefinition;
 
         beforeEach(function () {
-            action = fluo.createAction();
+            action = new fluo.Action();
             baseDefinition = {
                 init: function() {
                     this.listenTo(action, this.actionCalled);
@@ -158,7 +158,7 @@ describe('Creating stores', function() {
                     this.trigger(args);
                     resolve(args);
                 };
-                fluo.createStore({
+                new fluo.Store({
                     init: function() {
                         this.listenTo(store, this.storeTriggered, storeTriggered);
                     },
@@ -168,19 +168,19 @@ describe('Creating stores', function() {
         }
 
         it('should be triggered with argument from upstream store', function() {
-            var promise = createPromiseForTest(fluo.createStore(baseDefinition));
+            var promise = createPromiseForTest(new fluo.Store(baseDefinition));
             action('my argument');
             return assert.eventually.equal(promise, '[...] my argument');
         });
 
         it('should be triggered with arbitrary arguments from upstream store', function() {
-            var promise = createPromiseForTest(fluo.createStore(baseDefinition));
+            var promise = createPromiseForTest(new fluo.Store(baseDefinition));
             action(1337, 'ninja');
             return assert.eventually.deepEqual(promise, ['[...] 1337', '[...] ninja']);
         });
 
         it('should get initial state from getInitialState()', function() {
-            var store = fluo.createStore(_.extend(baseDefinition, {
+            var store = new fluo.Store(_.extend(baseDefinition, {
                 getInitialState: function () {
                     return ['initial state'];
                 }
@@ -190,7 +190,7 @@ describe('Creating stores', function() {
         });
 
         it('should get initial state from getInitialState() returned promise', function() {
-            var store = fluo.createStore(_.extend(baseDefinition, {
+            var store = new fluo.Store(_.extend(baseDefinition, {
                 getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
@@ -231,7 +231,7 @@ describe('Creating stores', function() {
                     onBazDefault:sinon.spy(),
                     listenables:listenables
                 },
-                store = fluo.createStore(def);
+                store = new fluo.Store(def);
 
             it("should listenTo all listenables with the corresponding callbacks",function(){
                 assert.deepEqual(listenables.foo.listen.firstCall.args,[store.onFoo,store]);
@@ -260,7 +260,7 @@ describe('Creating stores', function() {
                 second = {bar:{listen:sinon.spy()},baz:{listen:sinon.spy()}},
                 arr = [first,second],
                 def = {foo:"foo",bar:"bar",baz:"baz",listenables:arr},
-                store = fluo.createStore(def);
+                store = new fluo.Store(def);
 
             it("should add listeners from all objects in the array",function(){
                 assert.deepEqual(first.foo.listen.firstCall.args,[def.foo,store]);
@@ -273,7 +273,7 @@ describe('Creating stores', function() {
 
     it("should copy all props from definition",function(){
         var def = {random:"FOO",preEmit:"BAZ",blah:"BAH"},
-            store = fluo.createStore(def);
+            store = new fluo.Store(def);
         assert.equal(store.random,def.random);
         assert.equal(store.preEmit,def.preEmit);
         assert.equal(store.blah,def.blah);
@@ -281,7 +281,7 @@ describe('Creating stores', function() {
 
     describe('store methods', function() {
         var initReflect,
-            store = fluo.createStore({
+            store = new fluo.Store({
                 init: function() {
                     initReflect = this.reflect;
                 },
@@ -303,7 +303,7 @@ describe('Creating stores', function() {
     describe('getters', function() {
         var didRun = false;
 
-        fluo.createStore({
+        new fluo.Store({
             get dontRunMe() {
                 didRun = true;
             }

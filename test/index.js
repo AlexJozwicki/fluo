@@ -5,7 +5,7 @@ var textUpdate = fluo.createAction();
 var statusUpdate = fluo.createAction();
 
 // Creating a Data Store - Listening to textUpdate action
-var textStore = fluo.createStore({
+var textStore = new fluo.Store({
     init: function() {
         this.listenTo(textUpdate, this.output);
     },
@@ -21,7 +21,7 @@ var textStore = fluo.createStore({
 });
 
 // Creating a DataStore
-var statusStore = fluo.createStore({
+var statusStore = new fluo.Store({
     init: function() {
         this.listenTo(statusUpdate, this.output);
     },
@@ -32,7 +32,7 @@ var statusStore = fluo.createStore({
 });
 
 // Creating an aggregate DataStore that is listening to textStore and statusStore
-var storyStore = fluo.createStore({
+var storyStore = new fluo.Store({
     init: function() {
         this.listenTo(statusStore, this.statusChanged);
         this.listenTo(textStore, this.textUpdated);

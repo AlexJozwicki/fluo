@@ -1,6 +1,7 @@
 var _ = require('./utils');
 
 var Publisher = require('./Publisher');
+var keep = require('./keep');
 
 
 /**
@@ -33,6 +34,9 @@ class Action extends Publisher {
         var trigger = definition.sync ? this.triggerSync : this.trigger;
         var functor = trigger.bind(this);
         functor.__proto__ = this;
+
+        keep.createdActions.push( functor );
+
         return functor;
     }
 

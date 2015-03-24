@@ -5,12 +5,12 @@ var assert = require('chai').assert,
 describe('using joins',function(){
     describe('with static methods',function(){
         describe('keeping trailing arguments',function(){
-            var action1 = fluo.createAction(),
-                action2 = fluo.createAction(),
-                action3 = fluo.createAction(),
+            var action1 = new fluo.Action(),
+                action2 = new fluo.Action(),
+                action3 = new fluo.Action(),
                 join = fluo.joinTrailing(action1,action2,action3),
                 spy = sinon.spy();
-            fluo.createStore().listenTo(join,spy);
+            new fluo.Store().listenTo(join,spy);
             action1('a');
             action2('b');
             action1('x');
@@ -32,12 +32,12 @@ describe('using joins',function(){
             });
         });
         describe('keeping leading arguments',function(){
-            var action1 = fluo.createAction(),
-                action2 = fluo.createAction(),
-                action3 = fluo.createAction(),
+            var action1 = new fluo.Action(),
+                action2 = new fluo.Action(),
+                action3 = new fluo.Action(),
                 join = fluo.joinLeading(action1,action2,action3),
                 spy = sinon.spy();
-            fluo.createStore().listenTo(join,spy);
+            new fluo.Store().listenTo(join,spy);
             action1('a');
             action2('b');
             action1('x');
@@ -48,12 +48,12 @@ describe('using joins',function(){
             });
         });
         describe('concatenating arguments',function(){
-            var action1 = fluo.createAction(),
-                action2 = fluo.createAction(),
-                action3 = fluo.createAction(),
+            var action1 = new fluo.Action(),
+                action2 = new fluo.Action(),
+                action3 = new fluo.Action(),
                 join = fluo.joinConcat(action1,action2,action3),
                 spy = sinon.spy();
-            fluo.createStore().listenTo(join,spy);
+            new fluo.Store().listenTo(join,spy);
             action1('a');
             action2('b');
             action1('x');
@@ -71,13 +71,13 @@ describe('using joins',function(){
                 spy;
 
             beforeEach(function() {
-                action1 = fluo.createAction();
-                action2 = fluo.createAction();
-                action3 = fluo.createAction();
+                action1 = new fluo.Action();
+                action2 = new fluo.Action();
+                action3 = new fluo.Action();
                 join = fluo.joinStrict(action1,action2,action3);
                 spy = sinon.spy();
 
-                fluo.createStore().listenTo(join, spy);
+                new fluo.Store().listenTo(join, spy);
             });
 
             it("should emit with the arguments",function(done){
@@ -102,7 +102,7 @@ describe('using joins',function(){
     });
     describe('with instance methods',function(){
         describe('when validation fails',function(){
-            var store = fluo.createStore(),
+            var store = new fluo.Store(),
                 action1 = {listen:sinon.spy()},
                 action2 = {listen:sinon.spy()},
                 action3 = {listen:sinon.spy()};
@@ -117,10 +117,10 @@ describe('using joins',function(){
             });
         });
         describe('keeping trailing arguments',function(){
-            var action1 = fluo.createAction(),
-                action2 = fluo.createAction(),
-                action3 = fluo.createAction(),
-                store = fluo.createStore(),
+            var action1 = new fluo.Action(),
+                action2 = new fluo.Action(),
+                action3 = new fluo.Action(),
+                store = new fluo.Store(),
                 callback = sinon.spy(),
                 validate = sinon.spy(),
                 result;
@@ -161,10 +161,10 @@ describe('using joins',function(){
             });
         });
         describe('keeping leading arguments',function(){
-            var action1 = fluo.createAction(),
-                action2 = fluo.createAction(),
-                action3 = fluo.createAction(),
-                store = fluo.createStore(),
+            var action1 = new fluo.Action(),
+                action2 = new fluo.Action(),
+                action3 = new fluo.Action(),
+                store = new fluo.Store(),
                 spy = sinon.spy();
             store.joinLeading(action1,action2,action3,spy);
             action1('a');
@@ -177,10 +177,10 @@ describe('using joins',function(){
             });
         });
         describe('concatenating arguments',function(){
-            var action1 = fluo.createAction(),
-                action2 = fluo.createAction(),
-                action3 = fluo.createAction(),
-                store = fluo.createStore(),
+            var action1 = new fluo.Action(),
+                action2 = new fluo.Action(),
+                action3 = new fluo.Action(),
+                store = new fluo.Store(),
                 spy = sinon.spy();
             store.joinConcat(action1,action2,action3,spy);
             action1('a');
@@ -200,10 +200,10 @@ describe('using joins',function(){
                 spy;
 
             beforeEach(function () {
-                action1 = fluo.createAction();
-                action2 = fluo.createAction();
-                action3 = fluo.createAction();
-                store = fluo.createStore();
+                action1 = new fluo.Action();
+                action2 = new fluo.Action();
+                action3 = new fluo.Action();
+                store = new fluo.Store();
                 spy = sinon.spy();
                 store.joinStrict(action1,action2,action3,spy);
             });
@@ -229,10 +229,10 @@ describe('using joins',function(){
         describe('with less than 2 participants in the join',function(){
             it('should fail',function(){
                 assert.throws(function(){
-                    fluo.createStore().joinConcat(fluo.createAction(),function(){});
+                    new fluo.Store().joinConcat(new fluo.Action(),function(){});
                 });
                 assert.throws(function(){
-                    fluo.createStore().joinConcat(function(){});
+                    new fluo.Store().joinConcat(function(){});
                 });
             });
         });

@@ -1,6 +1,7 @@
 var _ = require('./utils');
 
 var Listener = require('./Listener');
+var keep = require('./keep');
 
 
 /**
@@ -26,6 +27,8 @@ class Store extends Listener {
                 this.listenToMany(arr[i]);
             }
         }
+
+        keep.createdStores.push( this );
     }
 
     init() {}

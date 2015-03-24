@@ -9,7 +9,7 @@ chai.use(require('chai-as-promised'));
 describe('Creating action', function() {
 
     it("should implement the publisher API",function(){
-        var action = fluo.createAction();
+        var action = new fluo.Action();
         for(var apimethod in fluo.PublisherMethods){
             assert.equal(fluo.PublisherMethods[apimethod],action[apimethod]);
         }
@@ -21,7 +21,7 @@ describe('Creating action', function() {
             shouldEmit: function () { return "SHO"; },
             random: function () { return "RAN"; }
         };
-        var action = fluo.createAction(def);
+        var action = new fluo.Action(def);
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
         assert.equal(action.random, def.random);
@@ -29,7 +29,7 @@ describe('Creating action', function() {
 
     it("should create specified child actions",function(){
         var def = {children: ["foo","BAR"]},
-            action = fluo.createAction(def);
+            action = new fluo.Action(def);
 
         assert.deepEqual(action.children, ["foo", "BAR"]);
         assert.equal(action.foo._isAction, true);
@@ -40,7 +40,7 @@ describe('Creating action', function() {
 
     it("should create completed and failed child actions for async actions",function(){
         var def = {asyncResult: true},
-            action = fluo.createAction(def);
+            action = new fluo.Action(def);
 
         assert.equal(action.asyncResult, true);
         assert.deepEqual(action.children, ["completed", "failed"]);
@@ -52,7 +52,7 @@ describe('Creating action', function() {
         testArgs;
 
     beforeEach(function () {
-        action = fluo.createAction();
+        action = new fluo.Action();
         testArgs = [1337, 'test'];
     });
 
@@ -61,11 +61,11 @@ describe('Creating action', function() {
     });
 
     describe("the synchronisity",function(){
-        var syncaction = fluo.createAction({sync: true}),
-            asyncaction = fluo.createAction(),
+        var syncaction = new fluo.Action({sync: true}),
+            asyncaction = new fluo.Action(),
             synccalled = false,
             asynccalled = false,
-            store = fluo.createStore({
+            store = new fluo.Store({
                 sync: function(){synccalled=true;},
                 async: function(){asynccalled=true;}
             });
@@ -103,7 +103,7 @@ describe('Creating action', function() {
 
         describe('when adding preEmit hook', function() {
             var preEmit = sinon.spy(),
-                action = fluo.createAction({preEmit:preEmit});
+                action = new fluo.Action({preEmit:preEmit});
 
             action(1337,'test');
 
@@ -115,7 +115,7 @@ describe('Creating action', function() {
         describe('when adding shouldEmit hook',function(){
             describe("when hook returns true",function(){
                 var shouldEmit = sinon.stub().returns(true),
-                    action = fluo.createAction({shouldEmit:shouldEmit}),
+                    action = new fluo.Action({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
 
                 var listener = new fluo.Listener();
@@ -136,7 +136,7 @@ describe('Creating action', function() {
 
             describe("when hook returns false",function(){
                 var shouldEmit = sinon.stub().returns(false),
-                    action = fluo.createAction({shouldEmit:shouldEmit}),
+                    action = new fluo.Action({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
 
                 var listener = new fluo.Listener();
