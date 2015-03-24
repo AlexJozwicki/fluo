@@ -9,14 +9,9 @@ var Listener = require('./Listener');
  * @param {Object=} methods Data store object methods
  */
 class Store extends Listener {
-    constructor(methods) {
+    constructor() {
         super();
         this.eventType = 'change';
-
-        if (methods) {
-            _.bindMethods(methods, this);
-            _.copyPropertiesOf(methods, this);
-        }
 
         this.init();
 
