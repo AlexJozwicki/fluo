@@ -25,8 +25,7 @@
     "fluo"
   ],
   "dependencies": {
-    "eventemitter3": "^0.1.2",
-    "native-promise-only": "^0.7.6-a"
+    "eventemitter3": "^0.1.2"
   },
   "devDependencies": {
     "babel": "^4.7.16",
