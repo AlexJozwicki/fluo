@@ -5,17 +5,11 @@ var Listener = require('./Listener');
 /**
  */
 class Store extends Listener {
-    constructor( listenables ) {
+    constructor() {
         super();
-        this.eventType = 'change';
-
-        if( listenables ) {
-            var arr = [].concat(listenables);
-            for (var i = 0; i < arr.length; ++i) {
-                this.listenToMany(arr[i]);
-            }
-        }
     }
+
+    get eventType() { return 'change'; }
 
     /**
      * Publishes the state to all subscribers.

@@ -9,7 +9,6 @@ class Action extends Publisher {
         super( this );
 
         //this.actionType = 'action';
-        this.eventType = 'event';
         this.asyncResult = !!definition.asyncResult;
 
         this.children = definition.children || [];
@@ -33,6 +32,7 @@ class Action extends Publisher {
         return functor;
     }
 
+    get eventType() { return 'event'; }
     get isAction() { return true; }
 
 

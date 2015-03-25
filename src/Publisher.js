@@ -10,13 +10,11 @@ class Publisher {
      */
     constructor() {
         this.emitter = new _.EventEmitter();
-
         this.children = [];
-        this.eventType = 'event';
-
         this.dispatchPromises_ = [];
     }
 
+    get eventType() { return 'event'; }
     get isPublisher() { return true; }
 
 
