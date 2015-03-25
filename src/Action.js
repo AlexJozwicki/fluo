@@ -6,9 +6,8 @@ var Publisher = require( './Publisher' );
  */
 class Action extends Publisher {
     constructor( definition = {} ) {
-        super( this );
+        super();
 
-        //this.actionType = 'action';
         this.asyncResult = !!definition.asyncResult;
 
         this.children = definition.children || [];

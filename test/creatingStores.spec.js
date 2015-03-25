@@ -215,8 +215,7 @@ describe('Creating stores', function() {
 
     });
 
-    describe("the listenables property",function(){
-
+    describe("the listenToMany method",function(){
         describe("when given a single object",function(){
             var initialbarstate = "DEFAULTBARDATA",
                 initialbazstate = "DEFAULTBAZDATA",
@@ -240,7 +239,8 @@ describe('Creating stores', function() {
 
                 class _cl extends fluo.Store {
                     constructor() {
-                        super( listenables);
+                        super();
+                        this.listenToMany( listenables );
                     }
                 }
 
@@ -271,30 +271,6 @@ describe('Creating stores', function() {
                 assert.equal(store.onBaz.callCount,0);
                 assert.equal(store.onBazDefault.firstCall.args[0],initialbazstate);
             });
-        });
-
-        describe("when given an array",function(){
-            var first = {foo:{listen:sinon.spy()}},
-                second = {bar:{listen:sinon.spy()},baz:{listen:sinon.spy()}},
-                arr = [first,second],
-                def = {foo:"foo",bar:"bar",baz:"baz"};
-                class _cl extends fluo.Store {
-                    constructor() {
-                        super( arr);
-                    }
-                }
-                _cl.prototype.foo = "foo";
-                _cl.prototype.bar = "bar";
-                _cl.prototype.baz = "baz";
-
-                var store = new _cl();
-
-            it("should add listeners from all objects in the array",function(){
-                assert.deepEqual(first.foo.listen.firstCall.args,[def.foo,store]);
-                assert.deepEqual(second.bar.listen.firstCall.args,[def.bar,store]);
-                assert.deepEqual(second.baz.listen.firstCall.args,[def.baz,store]);
-            });
-
         });
     });
 
